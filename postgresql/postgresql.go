@@ -57,7 +57,7 @@ func (p postgresql) GetNodeAuthData() ([]pb.NodeAuthData, error) {
 const createNodeAuthExec = `
 	INSERT INTO NodeAuth 
 	(Ticker, Uuid, Status) 
-	VALUES (?, ?, ?)
+	VALUES ($1, $2, $3)
 `
 
 func (p postgresql) CreateNodeAuthData(data pb.NodeAuthData) error {
@@ -72,8 +72,8 @@ func (p postgresql) CreateNodeAuthData(data pb.NodeAuthData) error {
 
 const updateNodeAuthData = `
 	UPDATE nodeauth
-	SET ticker = ?, status = ?
-	WHERE uuid = ?
+	SET ticker = $1, status = $2
+	WHERE uuid = $3
 `
 
 func (p postgresql) UpdateNodeAuthData(data pb.NodeAuthData) error {
@@ -89,7 +89,7 @@ func (p postgresql) UpdateNodeAuthData(data pb.NodeAuthData) error {
 
 const deleteNodeAuthExec = `
 	DELETE FROM nodeauth
-	WHERE uuid = ?
+	WHERE uuid = $1
 `
 
 func (p postgresql) DeleteNodeAuthData(data pb.NodeAuthData) error {
@@ -132,7 +132,7 @@ func (p postgresql) GetNodeBasicData() ([]pb.NodeBasicData, error) {
 const createNodeBasicDataExec = `
 	INSERT INTO nodebasicdata 
 	(ticker, type, location, nodeversion) 
-	VALUES (?, ?, ?, ?)
+	VALUES ($1, $2, $3, $4)
 `
 
 func (p postgresql) CreateNodeBasicData(data pb.NodeBasicData) error {
@@ -176,7 +176,7 @@ func (p postgresql) GetServerBasicData() ([]pb.ServerBasicData, error) {
 const createServerBasicDataExec = `
 	INSERT INTO serverbasicdata 
 	(ipv4, ipv6, linuxname, linuxversion) 
-	VALUES (?, ?, ?, ?)
+	VALUES ($1, $2, $3, $4)
 `
 
 func (p postgresql) CreateServerBasicData(data pb.ServerBasicData) error {
@@ -219,7 +219,7 @@ func (p postgresql) GetEpochData() ([]pb.Epoch, error) {
 const createEpochDataExec = `
 	INSERT INTO epochdata
 	(epochnumber)
-	VALUES (?)
+	VALUES ($1)
 `
 
 func (p postgresql) CreateEpochData(data pb.Epoch) error {
@@ -263,7 +263,7 @@ func (p postgresql) GetKesData() ([]pb.KESData, error) {
 const createKesDataExec = `
 	INSERT INTO kesdata
 	(kescurrent, kesremaining, kesexpdate) 
-	VALUES (?, ?, ?)
+	VALUES ($1, $2, $3)
 `
 
 func (p postgresql) CreateKesData(data pb.KESData) error {
@@ -307,7 +307,7 @@ func (p postgresql) GetBlocksData() ([]pb.Blocks, error) {
 const createBlocksDataExec = `
 	INSERT INTO blocksdata
 	(blockleader, blockadopted, blockinvalid)
-	VALUES (?,?,?)
+	VALUES ($1, $2, $3)
 `
 
 func (p postgresql) CreateBlocksData(data pb.Blocks) error {
@@ -352,7 +352,7 @@ func (p postgresql) GetUpdatesData() ([]pb.Updates, error) {
 const createUpdatesDataExec = `
 	INSERT INTO updatesdata
 	(informeractual, informeravailable, updateractual, updateravailable, packagesavailable)
-	VALUES (?, ?, ?, ?, ?)
+	VALUES ($1, $2, $3, $4, $5)
 `
 
 func (p postgresql) CreateUpdatesData(data pb.Updates) error {
@@ -397,7 +397,7 @@ func (p postgresql) GetSecurityData() ([]pb.Security, error) {
 const createSecurityDataExec = `
 	INSERT INTO securitydata
 	(sshattackattempts, securitypackagesavailable)
-	VALUES (?,?)
+	VALUES ($1, $2)
 `
 
 func (p postgresql) CreateSecurityData(data pb.Security) error {
@@ -441,7 +441,7 @@ func (p postgresql) GetStakeInfoData() ([]pb.StakeInfo, error) {
 const createStakeInfoDataExec = `
 	INSERT INTO stackdata
 	(livestake, activestake, pledge)
-	VALUES (?,?, ?)
+	VALUES ($1, $2, $3)
 `
 
 func (p postgresql) CreateStakeInfoData(data pb.StakeInfo) error {
@@ -487,7 +487,7 @@ func (p postgresql) GetOnlineData() ([]pb.Online, error) {
 const createOnlineDataExec = `
 	INSERT INTO onlinedata
 	(sincestart, pings, nodeactive, nodeactivepings, serveractive)
-	VALUES (?, ?, ?, ?, ?)
+	VALUES ($1, $2, $3, $4, $5)
 `
 
 func (p postgresql) CreateOnlineData(data pb.Online) error {
@@ -540,7 +540,7 @@ const createMemoryStateDataExec = `
 	INSERT INTO memorystatedata
 	(total, used, buffers, cached, free, available, active, inactive,
 	 swaptotal, swapused, swapcached, swapfree, memavailableenabled) 
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 `
 
 func (p postgresql) CreateMemoryStateData(data pb.MemoryState) error {
@@ -587,7 +587,7 @@ func (p postgresql) GetNodePerformanceData() ([]pb.NodePerformance, error) {
 const createNodePerformanceDataExec = `
 	INSERT INTO nodeperformancedata
 	(processedtx, peersin, peersout)
-	VALUES (?, ?, ?)
+	VALUES ($1, $2, $3)
 `
 
 func (p postgresql) CreateNodePerformanceData(data pb.NodePerformance) error {
@@ -631,7 +631,7 @@ func (p postgresql) GetCpuStateData() ([]pb.CPUState, error) {
 const createCpuStateDataExec = `
 	INSERT INTO cpustatedata
 	(cpuqty, averageworkload)
-	VALUES (?, ?)
+	VALUES ($1, $2)
 `
 
 func (p postgresql) CreateCpuStateData(data pb.CPUState) error {
@@ -675,7 +675,7 @@ func (p postgresql) GetNodeStateData() ([]pb.NodeState, error) {
 const createNodeStateData = `
 	INSERT INTO nodestatedata
 	(tipdiff, density) 
-	VALUES (?, ?)
+	VALUES ($1, $2)
 `
 
 func (p postgresql) CreateNodeStateData(data pb.NodeState) error {
