@@ -2,60 +2,81 @@ package postgresql
 
 import "log"
 
-const createNodeAuthTableExec = `CREATE TABLE IF NOT EXISTS NodeAuth (
-    Ticker text PRIMARY KEY,
+const createNodeAuthTableExec = `
+	CREATE TABLE IF NOT EXISTS NodeAuth (
+    Ticker text not null,
     Uuid text PRIMARY KEY,
-    Status text not null)`
+    Status text not null)
+`
 
-const createNodeBasicDataTableExec = `CREATE TABLE IF NOT EXISTS NodeBasicData (
+const createNodeBasicDataTableExec = `
+	CREATE TABLE IF NOT EXISTS NodeBasicData (
     Ticker text PRIMARY KEY,
     Type text not null,
     Location text not null,
-    NodeVersion text not null)`
+    NodeVersion text not null)
+`
 
-const createServerBasicDataTableExec = `CREATE TABLE IF NOT EXISTS ServerBasicData (
+const createServerBasicDataTableExec = `
+	CREATE TABLE IF NOT EXISTS ServerBasicData (
     Ipv4 text not null,
     Ipv6 text not null,
     LinuxName text not null,
-    LinuxVersion text not null)`
+    LinuxVersion text not null)
+`
 
-const createEpochDataTableExec = `CREATE TABLE IF NOT EXISTS EpochData (
-    EpochNumber int8 not null)`
+const createEpochDataTableExec = `
+	CREATE TABLE IF NOT EXISTS EpochData (
+    EpochNumber int8 not null)
+`
 
-const createKesDataTableExec = `CREATE TABLE IF NOT EXISTS KesData (
+const createKesDataTableExec = `
+	CREATE TABLE IF NOT EXISTS KesData (
     KesCurrent int8 not null,
     KesRemaining int8 not null,
-    KesExpDate text not null)`
+    KesExpDate text not null)
+`
 
-const createBlocksDataTableExec = `CREATE TABLE IF NOT EXISTS BlocksData (
+const createBlocksDataTableExec = `
+CREATE TABLE IF NOT EXISTS BlocksData (
     BlockLeader int8 not null,
     BlockAdopted int8 not null,
-    BlockInvalid int8 not null)`
+    BlockInvalid int8 not null)
+`
 
-const createUpdatesDataTableExec = `CREATE TABLE IF NOT EXISTS UpdatesData (
+const createUpdatesDataTableExec = `
+CREATE TABLE IF NOT EXISTS UpdatesData (
     InformerActual text not null,
     InformerAvailable text not null,
     UpdaterActual text not null,
 	UpdaterAvailable text not null,
-	PackagesAvailable int8 not null)`
+	PackagesAvailable int8 not null)
+`
 
-const createSecurityDataTableExec = `CREATE TABLE IF NOT EXISTS SecurityData (
+const createSecurityDataTableExec = `
+CREATE TABLE IF NOT EXISTS SecurityData (
     SshAttackAttempts int8 not null,
-    SecurityPackagesAvailable int8 not null)`
+    SecurityPackagesAvailable int8 not null)
+`
 
-const createStakeDataTableExec = `CREATE TABLE IF NOT EXISTS StackData (
+const createStakeDataTableExec = `
+CREATE TABLE IF NOT EXISTS StackData (
     LiveStake int8 not null,
     ActiveStake int8 not null,
-    Pledge int8 not null)`
+    Pledge int8 not null)
+`
 
-const createOnlineDataTableExec = `CREATE TABLE IF NOT EXISTS OnlineData (
+const createOnlineDataTableExec = `
+CREATE TABLE IF NOT EXISTS OnlineData (
     SinceStart int8 not null,
     Pings int8 not null,
     NodeActive bool not null,
 	NodeActivePings int8 not null,
-	ServerActive bool not null)`
+	ServerActive bool not null)
+`
 
-const createMemoryStateDataTableExec = `CREATE TABLE IF NOT EXISTS MemoryStateData (
+const createMemoryStateDataTableExec = `
+CREATE TABLE IF NOT EXISTS MemoryStateData (
     Total int8 not null,
     Used int8 not null,
     Buffers int8 not null,
@@ -68,20 +89,27 @@ const createMemoryStateDataTableExec = `CREATE TABLE IF NOT EXISTS MemoryStateDa
 	SwapUsed int8 not null,
     SwapCached int8 not null,
     SwapFree int8 not null,
-	MemAvailableEnabled int8 not null)`
+	MemAvailableEnabled int8 not null)
+`
 
-const createCpuStateTableExec = `CREATE TABLE IF NOT EXISTS CpuStateData (
+const createCpuStateTableExec = `
+CREATE TABLE IF NOT EXISTS CpuStateData (
     CpuQty int8 not null,
-    AverageWorkload float4 not null)`
+    AverageWorkload float4 not null)
+`
 
-const createNodeStateTableExec = `CREATE TABLE IF NOT EXISTS NodeStateData (
+const createNodeStateTableExec = `
+CREATE TABLE IF NOT EXISTS NodeStateData (
     TipDiff int8 not null,
-    Density float4 not null)`
+    Density float4 not null)
+`
 
-const createNodePerformanceTableExec = `CREATE TABLE IF NOT EXISTS NodePerformanceData (
+const createNodePerformanceTableExec = `
+CREATE TABLE IF NOT EXISTS NodePerformanceData (
     ProcessedTx int8 not null,
     PeersIn int8 not null,
-    PeersOut int8 not null)`
+    PeersOut int8 not null)
+`
 
 func (p postgresql) CreateAllTables() error {
 	if _, err := p.dbConn.Exec(createNodeAuthTableExec); err != nil {

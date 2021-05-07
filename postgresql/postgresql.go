@@ -2,29 +2,24 @@ package postgresql
 
 import (
 	"database/sql"
+	"fmt"
 	pb "github.com/adarocket/proto"
 	"log"
 )
 
 // PostgreSQL ...
-var _ postgresql
+var Postg postgresql
 
 // InitDatabase ...
 func InitDatabase() {
-	/*// todo везде где может возникать ошибка, нужно ее возвращать
-	config, readerErr := reader.ReadJSON("config/dbConfig.json")
-	if readerErr != nil {
-		log.Fatal(readerErr)
-	}
 	connStr := fmt.Sprintf(`user=%s password=%s dbname=%s sslmode=%s`,
-		config.User, config.Password, config.Dbname, config.Sslmode)
+		"postgres", "postgresql", "postgres", "disable")
 	// connStr := "user = postgres password=postgresql dbname=crypto sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
 	}
-	PostgreSQL.dbConn = db*/
-
+	Postg.dbConn = db
 }
 
 type postgresql struct {
@@ -33,7 +28,8 @@ type postgresql struct {
 
 const getNodeAuthQuery = `
 	SELECT Ticker, Uuid, Status 
-	FROM NodeAuth`
+	FROM NodeAuth
+`
 
 func (p postgresql) GetNodeAuthData() ([]pb.NodeAuthData, error) {
 	rows, err := p.dbConn.Query(getNodeAuthQuery)
@@ -61,7 +57,8 @@ func (p postgresql) GetNodeAuthData() ([]pb.NodeAuthData, error) {
 const createNodeAuthExec = `
 	INSERT INTO NodeAuth 
 	(Ticker, Uuid, Status) 
-	VALUES (?, ?, ?)`
+	VALUES (?, ?, ?)
+`
 
 func (p postgresql) CreateNodeAuthData(data pb.NodeAuthData) error {
 	if _, err := p.dbConn.Exec(createNodeAuthExec,
@@ -73,13 +70,27 @@ func (p postgresql) CreateNodeAuthData(data pb.NodeAuthData) error {
 	return nil
 }
 
+const updateNodeAuthData = `
+	UPDATE nodeauth
+	SET ticker = ?, status = ?
+	WHERE uuid = ?
+`
+
 func (p postgresql) UpdateNodeAuthData(data pb.NodeAuthData) error {
-	panic("implement me")
+	_, err := p.dbConn.Exec(updateNodeAuthData,
+		data.Ticker, data.Status)
+	if err != nil {
+		log.Println("UpdateToken", err)
+		return err
+	}
+
+	return nil
 }
 
 const deleteNodeAuthExec = `
-	DELETE FROM NodeAuth
-	WHERE Ticker = ?`
+	DELETE FROM nodeauth
+	WHERE uuid = ?
+`
 
 func (p postgresql) DeleteNodeAuthData(data pb.NodeAuthData) error {
 	if _, err := p.dbConn.Exec(deleteNodeAuthExec, data.Ticker); err != nil {
@@ -90,7 +101,10 @@ func (p postgresql) DeleteNodeAuthData(data pb.NodeAuthData) error {
 	return nil
 }
 
-const getNodeBasicDataQuery = ``
+const getNodeBasicDataQuery = `
+	SELECT ticker, type, location, nodeversion 
+	FROM NodeBasicData
+`
 
 func (p postgresql) GetNodeBasicData() ([]pb.NodeBasicData, error) {
 	rows, err := p.dbConn.Query(getNodeBasicDataQuery)
@@ -115,7 +129,11 @@ func (p postgresql) GetNodeBasicData() ([]pb.NodeBasicData, error) {
 	return nodesBasicData, nil
 }
 
-const createNodeBasicDataExec = ``
+const createNodeBasicDataExec = `
+	INSERT INTO nodebasicdata 
+	(ticker, type, location, nodeversion) 
+	VALUES (?, ?, ?, ?)
+`
 
 func (p postgresql) CreateNodeBasicData(data pb.NodeBasicData) error {
 	if _, err := p.dbConn.Exec(createNodeBasicDataExec,
@@ -127,7 +145,10 @@ func (p postgresql) CreateNodeBasicData(data pb.NodeBasicData) error {
 	return nil
 }
 
-const getServerBasicData = ``
+const getServerBasicData = `
+	SELECT ipv4, ipv6, linuxname, linuxversion
+	FROM serverbasicdata
+`
 
 func (p postgresql) GetServerBasicData() ([]pb.ServerBasicData, error) {
 	rows, err := p.dbConn.Query(getServerBasicData)
@@ -152,7 +173,11 @@ func (p postgresql) GetServerBasicData() ([]pb.ServerBasicData, error) {
 	return serverBasicDates, nil
 }
 
-const createServerBasicDataExec = ``
+const createServerBasicDataExec = `
+	INSERT INTO serverbasicdata 
+	(ipv4, ipv6, linuxname, linuxversion) 
+	VALUES (?, ?, ?, ?)
+`
 
 func (p postgresql) CreateServerBasicData(data pb.ServerBasicData) error {
 	if _, err := p.dbConn.Exec(createServerBasicDataExec,
@@ -164,7 +189,10 @@ func (p postgresql) CreateServerBasicData(data pb.ServerBasicData) error {
 	return nil
 }
 
-const getEpochDataQuery = ``
+const getEpochDataQuery = `
+	SELECT epochnumber
+	FROM epochdata
+`
 
 func (p postgresql) GetEpochData() ([]pb.Epoch, error) {
 	rows, err := p.dbConn.Query(getEpochDataQuery)
@@ -188,7 +216,11 @@ func (p postgresql) GetEpochData() ([]pb.Epoch, error) {
 	return epochDates, nil
 }
 
-const createEpochDataExec = ``
+const createEpochDataExec = `
+	INSERT INTO epochdata
+	(epochnumber)
+	VALUES (?)
+`
 
 func (p postgresql) CreateEpochData(data pb.Epoch) error {
 	if _, err := p.dbConn.Exec(createEpochDataExec,
@@ -200,7 +232,10 @@ func (p postgresql) CreateEpochData(data pb.Epoch) error {
 	return nil
 }
 
-const getKesDataQuery = ``
+const getKesDataQuery = `
+	SELECT epochnumber
+	FROM epochdata
+`
 
 func (p postgresql) GetKesData() ([]pb.KESData, error) {
 	rows, err := p.dbConn.Query(getKesDataQuery)
@@ -225,7 +260,11 @@ func (p postgresql) GetKesData() ([]pb.KESData, error) {
 	return kesDates, nil
 }
 
-const createKesDataExec = ``
+const createKesDataExec = `
+	INSERT INTO kesdata
+	(kescurrent, kesremaining, kesexpdate) 
+	VALUES (?, ?, ?)
+`
 
 func (p postgresql) CreateKesData(data pb.KESData) error {
 	if _, err := p.dbConn.Exec(createKesDataExec,
@@ -237,7 +276,10 @@ func (p postgresql) CreateKesData(data pb.KESData) error {
 	return nil
 }
 
-const getBlocksDataQuery = ``
+const getBlocksDataQuery = `
+	SELECT blockleader, blockadopted, blockinvalid
+	FROM blocksdata
+`
 
 func (p postgresql) GetBlocksData() ([]pb.Blocks, error) {
 	rows, err := p.dbConn.Query(getBlocksDataQuery)
@@ -262,7 +304,11 @@ func (p postgresql) GetBlocksData() ([]pb.Blocks, error) {
 	return blockDates, nil
 }
 
-const createBlocksDataExec = ``
+const createBlocksDataExec = `
+	INSERT INTO blocksdata
+	(blockleader, blockadopted, blockinvalid)
+	VALUES (?,?,?)
+`
 
 func (p postgresql) CreateBlocksData(data pb.Blocks) error {
 	if _, err := p.dbConn.Exec(createBlocksDataExec,
@@ -274,7 +320,10 @@ func (p postgresql) CreateBlocksData(data pb.Blocks) error {
 	return nil
 }
 
-const getUpdatesDataQuery = ``
+const getUpdatesDataQuery = `
+	SELECT INFORMERACTUAL, INFORMERAVAILABLE, UPDATERACTUAL, UPDATERAVAILABLE, PACKAGESAVAILABLE
+	FROM updatesdata
+`
 
 func (p postgresql) GetUpdatesData() ([]pb.Updates, error) {
 	rows, err := p.dbConn.Query(getUpdatesDataQuery)
@@ -300,7 +349,11 @@ func (p postgresql) GetUpdatesData() ([]pb.Updates, error) {
 	return updatesDates, nil
 }
 
-const createUpdatesDataExec = ``
+const createUpdatesDataExec = `
+	INSERT INTO updatesdata
+	(informeractual, informeravailable, updateractual, updateravailable, packagesavailable)
+	VALUES (?, ?, ?, ?, ?)
+`
 
 func (p postgresql) CreateUpdatesData(data pb.Updates) error {
 	if _, err := p.dbConn.Exec(createUpdatesDataExec,
@@ -313,7 +366,10 @@ func (p postgresql) CreateUpdatesData(data pb.Updates) error {
 	return nil
 }
 
-const getSecurityDataQuery = ``
+const getSecurityDataQuery = `
+	SELECT sshattackattempts, securitypackagesavailable
+	FROM securitydata
+`
 
 func (p postgresql) GetSecurityData() ([]pb.Security, error) {
 	rows, err := p.dbConn.Query(getSecurityDataQuery)
@@ -338,7 +394,11 @@ func (p postgresql) GetSecurityData() ([]pb.Security, error) {
 	return securityDates, nil
 }
 
-const createSecurityDataExec = ``
+const createSecurityDataExec = `
+	INSERT INTO securitydata
+	(sshattackattempts, securitypackagesavailable)
+	VALUES (?,?)
+`
 
 func (p postgresql) CreateSecurityData(data pb.Security) error {
 	if _, err := p.dbConn.Exec(createSecurityDataExec,
@@ -350,7 +410,10 @@ func (p postgresql) CreateSecurityData(data pb.Security) error {
 	return nil
 }
 
-const getStakeInfoDataQuery = ``
+const getStakeInfoDataQuery = `
+	SELECT livestake, activestake, pledge
+	FROM stackdata
+`
 
 func (p postgresql) GetStakeInfoData() ([]pb.StakeInfo, error) {
 	rows, err := p.dbConn.Query(getStakeInfoDataQuery)
@@ -375,7 +438,11 @@ func (p postgresql) GetStakeInfoData() ([]pb.StakeInfo, error) {
 	return stakeInfoDates, nil
 }
 
-const createStakeInfoDataExec = ``
+const createStakeInfoDataExec = `
+	INSERT INTO stackdata
+	(livestake, activestake, pledge)
+	VALUES (?,?, ?)
+`
 
 func (p postgresql) CreateStakeInfoData(data pb.StakeInfo) error {
 	if _, err := p.dbConn.Exec(createStakeInfoDataExec,
@@ -387,7 +454,10 @@ func (p postgresql) CreateStakeInfoData(data pb.StakeInfo) error {
 	return nil
 }
 
-const getOnlineDataQuery = ``
+const getOnlineDataQuery = `
+	SELECT sincestart, pings, nodeactive, nodeactivepings, serveractive
+	FROM onlinedata
+`
 
 func (p postgresql) GetOnlineData() ([]pb.Online, error) {
 	rows, err := p.dbConn.Query(getOnlineDataQuery)
@@ -414,7 +484,11 @@ func (p postgresql) GetOnlineData() ([]pb.Online, error) {
 	return onlineDates, nil
 }
 
-const createOnlineDataExec = ``
+const createOnlineDataExec = `
+	INSERT INTO onlinedata
+	(sincestart, pings, nodeactive, nodeactivepings, serveractive)
+	VALUES (?, ?, ?, ?, ?)
+`
 
 func (p postgresql) CreateOnlineData(data pb.Online) error {
 	if _, err := p.dbConn.Exec(createOnlineDataExec,
@@ -427,7 +501,11 @@ func (p postgresql) CreateOnlineData(data pb.Online) error {
 	return nil
 }
 
-const getMemoryStateDataQuery = ``
+const getMemoryStateDataQuery = `
+	SELECT total, used, buffers, cached, free, available, active, inactive, 
+	       swaptotal, swapused, swapcached, swapfree, memavailableenabled
+	FROM memorystatedata
+`
 
 func (p postgresql) GetMemoryStateData() ([]pb.MemoryState, error) {
 	rows, err := p.dbConn.Query(getMemoryStateDataQuery)
@@ -458,7 +536,12 @@ func (p postgresql) GetMemoryStateData() ([]pb.MemoryState, error) {
 	return memoryStateDates, nil
 }
 
-const createMemoryStateDataExec = ``
+const createMemoryStateDataExec = `
+	INSERT INTO memorystatedata
+	(total, used, buffers, cached, free, available, active, inactive,
+	 swaptotal, swapused, swapcached, swapfree, memavailableenabled) 
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`
 
 func (p postgresql) CreateMemoryStateData(data pb.MemoryState) error {
 	if _, err := p.dbConn.Exec(createMemoryStateDataExec,
@@ -473,7 +556,10 @@ func (p postgresql) CreateMemoryStateData(data pb.MemoryState) error {
 	return nil
 }
 
-const getNodePerformanceDataQuery = ``
+const getNodePerformanceDataQuery = `
+	SELECT processedtx, peersin, peersout
+	FROM nodeperformancedata
+`
 
 func (p postgresql) GetNodePerformanceData() ([]pb.NodePerformance, error) {
 	rows, err := p.dbConn.Query(getNodePerformanceDataQuery)
@@ -498,7 +584,11 @@ func (p postgresql) GetNodePerformanceData() ([]pb.NodePerformance, error) {
 	return nodePerformanceDates, nil
 }
 
-const createNodePerformanceDataExec = ``
+const createNodePerformanceDataExec = `
+	INSERT INTO nodeperformancedata
+	(processedtx, peersin, peersout)
+	VALUES (?, ?, ?)
+`
 
 func (p postgresql) CreateNodePerformanceData(data pb.NodePerformance) error {
 	if _, err := p.dbConn.Exec(createNodePerformanceDataExec,
@@ -510,7 +600,10 @@ func (p postgresql) CreateNodePerformanceData(data pb.NodePerformance) error {
 	return nil
 }
 
-const getCpuStateDataQuery = ``
+const getCpuStateDataQuery = `
+	SELECT cpuqty, averageworkload
+	FROM cpustatedata
+`
 
 func (p postgresql) GetCpuStateData() ([]pb.CPUState, error) {
 	rows, err := p.dbConn.Query(getCpuStateDataQuery)
@@ -535,7 +628,11 @@ func (p postgresql) GetCpuStateData() ([]pb.CPUState, error) {
 	return cpuStateDates, nil
 }
 
-const createCpuStateDataExec = ``
+const createCpuStateDataExec = `
+	INSERT INTO cpustatedata
+	(cpuqty, averageworkload)
+	VALUES (?, ?)
+`
 
 func (p postgresql) CreateCpuStateData(data pb.CPUState) error {
 	if _, err := p.dbConn.Exec(createCpuStateDataExec,
@@ -547,7 +644,10 @@ func (p postgresql) CreateCpuStateData(data pb.CPUState) error {
 	return nil
 }
 
-const getNodesStateDataQuery = ``
+const getNodesStateDataQuery = `
+	SELECT tipdiff, density
+	FROM nodestatedata
+`
 
 func (p postgresql) GetNodeStateData() ([]pb.NodeState, error) {
 	rows, err := p.dbConn.Query(getNodesStateDataQuery)
@@ -572,7 +672,11 @@ func (p postgresql) GetNodeStateData() ([]pb.NodeState, error) {
 	return nodeStateDates, nil
 }
 
-const createNodeStateData = ``
+const createNodeStateData = `
+	INSERT INTO nodestatedata
+	(tipdiff, density) 
+	VALUES (?, ?)
+`
 
 func (p postgresql) CreateNodeStateData(data pb.NodeState) error {
 	if _, err := p.dbConn.Exec(createNodeStateData,
