@@ -58,6 +58,8 @@ const createNodeAuthExec = `
 	INSERT INTO NodeAuth 
 	(Ticker, Uuid, Status) 
 	VALUES ($1, $2, $3)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET status = excluded.status;
 `
 
 func (p postgresql) CreateNodeAuthData(data pb.NodeAuthData) error {
@@ -131,13 +133,18 @@ func (p postgresql) GetNodeBasicData() ([]pb.NodeBasicData, error) {
 
 const createNodeBasicDataExec = `
 	INSERT INTO nodebasicdata 
-	(ticker, type, location, nodeversion) 
-	VALUES ($1, $2, $3, $4)
+	(uuid, ticker, type, location, nodeversion) 
+	VALUES ($1, $2, $3, $4, $5)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET ticker = excluded.ticker,
+    	type = excluded.type,
+  		location = excluded.location,
+  	    nodeversion = excluded.nodeversion;
 `
 
-func (p postgresql) CreateNodeBasicData(data pb.NodeBasicData) error {
+func (p postgresql) CreateNodeBasicData(data pb.NodeBasicData, uuid string) error {
 	if _, err := p.dbConn.Exec(createNodeBasicDataExec,
-		data.Ticker, data.Type, data.Location, data.NodeVersion); err != nil {
+		uuid, data.Ticker, data.Type, data.Location, data.NodeVersion); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
 	}
@@ -175,13 +182,18 @@ func (p postgresql) GetServerBasicData() ([]pb.ServerBasicData, error) {
 
 const createServerBasicDataExec = `
 	INSERT INTO serverbasicdata 
-	(ipv4, ipv6, linuxname, linuxversion) 
-	VALUES ($1, $2, $3, $4)
+	(uuid, ipv4, ipv6, linuxname, linuxversion) 
+	VALUES ($1, $2, $3, $4, $5)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET ipv4 = excluded.ipv4, 
+      	ipv6 = excluded.ipv6,
+  	    linuxname = excluded.linuxname,
+  	    linuxversion = excluded.linuxversion;
 `
 
-func (p postgresql) CreateServerBasicData(data pb.ServerBasicData) error {
+func (p postgresql) CreateServerBasicData(data pb.ServerBasicData, uuid string) error {
 	if _, err := p.dbConn.Exec(createServerBasicDataExec,
-		data.Ipv4, data.Ipv6, data.LinuxName, data.LinuxVersion); err != nil {
+		uuid, data.Ipv4, data.Ipv6, data.LinuxName, data.LinuxVersion); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
 	}
@@ -218,13 +230,15 @@ func (p postgresql) GetEpochData() ([]pb.Epoch, error) {
 
 const createEpochDataExec = `
 	INSERT INTO epochdata
-	(epochnumber)
-	VALUES ($1)
+	(uuid, epochnumber)
+	VALUES ($1, $2)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET epochnumber = excluded.epochnumber;
 `
 
-func (p postgresql) CreateEpochData(data pb.Epoch) error {
+func (p postgresql) CreateEpochData(data pb.Epoch, uuid string) error {
 	if _, err := p.dbConn.Exec(createEpochDataExec,
-		data.EpochNumber); err != nil {
+		uuid, data.EpochNumber); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
 	}
@@ -262,13 +276,17 @@ func (p postgresql) GetKesData() ([]pb.KESData, error) {
 
 const createKesDataExec = `
 	INSERT INTO kesdata
-	(kescurrent, kesremaining, kesexpdate) 
-	VALUES ($1, $2, $3)
+	(uuid, kescurrent, kesremaining, kesexpdate) 
+	VALUES ($1, $2, $3, $4)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET kescurrent = excluded.kescurrent,
+  	    kesremaining = excluded.kesremaining,
+  	    kesexpdate = excluded.kesexpdate;  	    
 `
 
-func (p postgresql) CreateKesData(data pb.KESData) error {
+func (p postgresql) CreateKesData(data pb.KESData, uuid string) error {
 	if _, err := p.dbConn.Exec(createKesDataExec,
-		data.KesCurrent, data.KesRemaining, data.KesExpDate); err != nil {
+		uuid, data.KesCurrent, data.KesRemaining, data.KesExpDate); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
 	}
@@ -306,13 +324,17 @@ func (p postgresql) GetBlocksData() ([]pb.Blocks, error) {
 
 const createBlocksDataExec = `
 	INSERT INTO blocksdata
-	(blockleader, blockadopted, blockinvalid)
-	VALUES ($1, $2, $3)
+	(uuid, blockleader, blockadopted, blockinvalid)
+	VALUES ($1, $2, $3, $4)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET blockleader = excluded.blockleader,
+  	    blockadopted = excluded.blockadopted,
+  	    blockinvalid = excluded.blockinvalid;  
 `
 
-func (p postgresql) CreateBlocksData(data pb.Blocks) error {
+func (p postgresql) CreateBlocksData(data pb.Blocks, uuid string) error {
 	if _, err := p.dbConn.Exec(createBlocksDataExec,
-		data.BlockLeader, data.BlockAdopted, data.BlockInvalid); err != nil {
+		uuid, data.BlockLeader, data.BlockAdopted, data.BlockInvalid); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
 	}
@@ -351,13 +373,19 @@ func (p postgresql) GetUpdatesData() ([]pb.Updates, error) {
 
 const createUpdatesDataExec = `
 	INSERT INTO updatesdata
-	(informeractual, informeravailable, updateractual, updateravailable, packagesavailable)
-	VALUES ($1, $2, $3, $4, $5)
+	(uuid, informeractual, informeravailable, updateractual, updateravailable, packagesavailable)
+	VALUES ($1, $2, $3, $4, $5, $6)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET informeractual = excluded.informeractual,
+  	    informeravailable = excluded.informeravailable,
+  	    updateractual = excluded.updateractual, 
+  	    updateravailable = excluded.updateravailable,
+  	    packagesavailable = excluded.packagesavailable;
 `
 
-func (p postgresql) CreateUpdatesData(data pb.Updates) error {
+func (p postgresql) CreateUpdatesData(data pb.Updates, uuid string) error {
 	if _, err := p.dbConn.Exec(createUpdatesDataExec,
-		data.InformerActual, data.InformerAvailable, data.UpdaterActual,
+		uuid, data.InformerActual, data.InformerAvailable, data.UpdaterActual,
 		data.UpdaterAvailable, data.PackagesAvailable); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
@@ -396,13 +424,16 @@ func (p postgresql) GetSecurityData() ([]pb.Security, error) {
 
 const createSecurityDataExec = `
 	INSERT INTO securitydata
-	(sshattackattempts, securitypackagesavailable)
-	VALUES ($1, $2)
+	(uuid, sshattackattempts, securitypackagesavailable)
+	VALUES ($1, $2, $3)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET sshattackattempts = excluded.sshattackattempts,
+  	    securitypackagesavailable = excluded.securitypackagesavailable;
 `
 
-func (p postgresql) CreateSecurityData(data pb.Security) error {
+func (p postgresql) CreateSecurityData(data pb.Security, uuid string) error {
 	if _, err := p.dbConn.Exec(createSecurityDataExec,
-		data.SshAttackAttempts, data.SecurityPackagesAvailable); err != nil {
+		uuid, data.SshAttackAttempts, data.SecurityPackagesAvailable); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
 	}
@@ -440,13 +471,17 @@ func (p postgresql) GetStakeInfoData() ([]pb.StakeInfo, error) {
 
 const createStakeInfoDataExec = `
 	INSERT INTO stackdata
-	(livestake, activestake, pledge)
-	VALUES ($1, $2, $3)
+	(uuid, livestake, activestake, pledge)
+	VALUES ($1, $2, $3, $4)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET livestake = excluded.livestake,
+  	    activestake = excluded.activestake,
+  	    pledge = excluded.pledge;
 `
 
-func (p postgresql) CreateStakeInfoData(data pb.StakeInfo) error {
+func (p postgresql) CreateStakeInfoData(data pb.StakeInfo, uuid string) error {
 	if _, err := p.dbConn.Exec(createStakeInfoDataExec,
-		data.LiveStake, data.ActiveStake, data.Pledge); err != nil {
+		uuid, data.LiveStake, data.ActiveStake, data.Pledge); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
 	}
@@ -486,13 +521,19 @@ func (p postgresql) GetOnlineData() ([]pb.Online, error) {
 
 const createOnlineDataExec = `
 	INSERT INTO onlinedata
-	(sincestart, pings, nodeactive, nodeactivepings, serveractive)
-	VALUES ($1, $2, $3, $4, $5)
+	(uuid, sincestart, pings, nodeactive, nodeactivepings, serveractive)
+	VALUES ($1, $2, $3, $4, $5, $6)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET sincestart = excluded.sincestart,
+  	    pings = excluded.pings,
+  	    nodeactive = excluded.nodeactive,
+  	    nodeactivepings = excluded.nodeactivepings,
+  	    serveractive = excluded.serveractive;
 `
 
-func (p postgresql) CreateOnlineData(data pb.Online) error {
+func (p postgresql) CreateOnlineData(data pb.Online, uuid string) error {
 	if _, err := p.dbConn.Exec(createOnlineDataExec,
-		data.SinceStart, data.Pings, data.NodeActive,
+		uuid, data.SinceStart, data.Pings, data.NodeActive,
 		data.NodeActivePings, data.ServerActive); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
@@ -538,14 +579,27 @@ func (p postgresql) GetMemoryStateData() ([]pb.MemoryState, error) {
 
 const createMemoryStateDataExec = `
 	INSERT INTO memorystatedata
-	(total, used, buffers, cached, free, available, active, inactive,
+	(uuid, total, used, buffers, cached, free, available, active, inactive,
 	 swaptotal, swapused, swapcached, swapfree, memavailableenabled) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET total = excluded.total,
+  	    used = excluded.used,
+  	    buffers = excluded.buffers,
+  	    cached = excluded.cached,
+  	    free = excluded.free,
+  	    available = excluded.available,
+  	    active = excluded.inactive,
+  	    swaptotal = excluded.swaptotal,
+  	    swapused = excluded.swapused,
+  	    swapcached = excluded.swapcached,
+  	    swapfree = excluded.swapfree,
+  	    memavailableenabled = excluded.memavailableenabled;
 `
 
-func (p postgresql) CreateMemoryStateData(data pb.MemoryState) error {
+func (p postgresql) CreateMemoryStateData(data pb.MemoryState, uuid string) error {
 	if _, err := p.dbConn.Exec(createMemoryStateDataExec,
-		data.Total, data.Used, data.Buffers,
+		uuid, data.Total, data.Used, data.Buffers,
 		data.Cached, data.Free, data.Available,
 		data.Active, data.Inactive, data.SwapTotal,
 		data.SwapUsed, data.SwapCached, data.SwapFree, data.MemAvailableEnabled); err != nil {
@@ -586,13 +640,17 @@ func (p postgresql) GetNodePerformanceData() ([]pb.NodePerformance, error) {
 
 const createNodePerformanceDataExec = `
 	INSERT INTO nodeperformancedata
-	(processedtx, peersin, peersout)
-	VALUES ($1, $2, $3)
+	(uuid, processedtx, peersin, peersout)
+	VALUES ($1, $2, $3, $4)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET processedtx = excluded.processedtx,
+  	    peersin = excluded.peersin,
+  	    peersout = excluded.peersout;
 `
 
-func (p postgresql) CreateNodePerformanceData(data pb.NodePerformance) error {
+func (p postgresql) CreateNodePerformanceData(data pb.NodePerformance, uuid string) error {
 	if _, err := p.dbConn.Exec(createNodePerformanceDataExec,
-		data.ProcessedTx, data.PeersIn, data.PeersOut); err != nil {
+		uuid, data.ProcessedTx, data.PeersIn, data.PeersOut); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
 	}
@@ -630,13 +688,16 @@ func (p postgresql) GetCpuStateData() ([]pb.CPUState, error) {
 
 const createCpuStateDataExec = `
 	INSERT INTO cpustatedata
-	(cpuqty, averageworkload)
-	VALUES ($1, $2)
+	(uuid, cpuqty, averageworkload)
+	VALUES ($1, $2, $3)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET cpuqty = excluded.cpuqty,
+  	    averageworkload = excluded.averageworkload;
 `
 
-func (p postgresql) CreateCpuStateData(data pb.CPUState) error {
+func (p postgresql) CreateCpuStateData(data pb.CPUState, uuid string) error {
 	if _, err := p.dbConn.Exec(createCpuStateDataExec,
-		data.CpuQty, data.AverageWorkload); err != nil {
+		uuid, data.CpuQty, data.AverageWorkload); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
 	}
@@ -674,13 +735,16 @@ func (p postgresql) GetNodeStateData() ([]pb.NodeState, error) {
 
 const createNodeStateData = `
 	INSERT INTO nodestatedata
-	(tipdiff, density) 
-	VALUES ($1, $2)
+	(uuid, tipdiff, density) 
+	VALUES ($1, $2, $3)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET tipdiff = excluded.tipdiff,
+  	    density = excluded.density;
 `
 
-func (p postgresql) CreateNodeStateData(data pb.NodeState) error {
+func (p postgresql) CreateNodeStateData(data pb.NodeState, uuid string) error {
 	if _, err := p.dbConn.Exec(createNodeStateData,
-		data.TipDiff, data.Density); err != nil {
+		uuid, data.TipDiff, data.Density); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
 	}
