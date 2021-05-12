@@ -10,10 +10,11 @@ import (
 const timeout = 10
 
 func AutoSave(server informer.InformServer) {
+	postgresql.InitDatabase()
 	db := postgresql.Postg
 
 	go func() {
-		for _ = range time.Tick(time.Second * timeout) {
+		for _ = range time.Tick(time.Minute * timeout) {
 			for _, value := range server.NodeStatistics {
 				// if already exist?
 				if err := db.CreateNodeAuthData(*value.NodeAuthData); err != nil {
@@ -62,6 +63,4 @@ func AutoSave(server informer.InformServer) {
 			}
 		}
 	}()
-
-	time.Sleep(time.Minute)
 }
