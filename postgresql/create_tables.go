@@ -35,6 +35,7 @@ const createEpochDataTableExec = `
 
 const createKesDataTableExec = `
 	CREATE TABLE IF NOT EXISTS KesData (
+    Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
     KesCurrent bigint not null default 0,
     KesRemaining bigint not null default 0,
     KesExpDate varchar(40) not null default '')
