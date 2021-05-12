@@ -4,111 +4,123 @@ import "log"
 
 const createNodeAuthTableExec = `
 	CREATE TABLE IF NOT EXISTS NodeAuth (
-    Ticker varchar(40) not null,
+    Ticker varchar(40) not null default '',
     Uuid varchar(40) PRIMARY KEY,
-    Status varchar(40) not null)
+    Status varchar(40) not null default '')
 `
 
 const createNodeBasicDataTableExec = `
 	CREATE TABLE IF NOT EXISTS NodeBasicData (
-    Ticker varchar(40) PRIMARY KEY,
-    Type varchar(40) not null,
-    Location varchar(40) not null,
-    NodeVersion varchar(40) not null)
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid),    
+    Ticker varchar(40) not null default '',
+    Type varchar(40) not null default '',
+    Location varchar(40) not null default '',
+    NodeVersion varchar(40) not null default '')
 `
 
 const createServerBasicDataTableExec = `
 	CREATE TABLE IF NOT EXISTS ServerBasicData (
-    Ipv4 varchar(40) not null,
-    Ipv6 varchar(40) not null,
-    LinuxName varchar(40) not null,
-    LinuxVersion varchar(40) not null)
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
+    Ipv4 varchar(40) not null default '',
+    Ipv6 varchar(40) not null default '',
+    LinuxName varchar(40) not null default '',
+    LinuxVersion varchar(40) not null default '')
 `
 
 const createEpochDataTableExec = `
 	CREATE TABLE IF NOT EXISTS EpochData (
-    EpochNumber bigint not null)
+    Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
+	EpochNumber bigint not null default 0)
 `
 
 const createKesDataTableExec = `
 	CREATE TABLE IF NOT EXISTS KesData (
-    KesCurrent bigint not null,
-    KesRemaining bigint not null,
-    KesExpDate varchar(40) not null)
+    KesCurrent bigint not null default 0,
+    KesRemaining bigint not null default 0,
+    KesExpDate varchar(40) not null default '')
 `
 
 const createBlocksDataTableExec = `
 	CREATE TABLE IF NOT EXISTS BlocksData (
-    BlockLeader bigint not null,
-    BlockAdopted bigint not null,
-    BlockInvalid bigint not null)
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
+    BlockLeader bigint not null default 0,
+    BlockAdopted bigint not null default 0,
+    BlockInvalid bigint not null default 0)
 `
 
 const createUpdatesDataTableExec = `
 	CREATE TABLE IF NOT EXISTS UpdatesData (
-    InformerActual varchar(40) not null,
-    InformerAvailable varchar(40) not null,
-    UpdaterActual varchar(40) not null,
-	UpdaterAvailable varchar(40) not null,
-	PackagesAvailable bigint not null)
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
+    InformerActual varchar(40) not null default '',
+    InformerAvailable varchar(40) not null default '',
+    UpdaterActual varchar(40) not null default '',
+	UpdaterAvailable varchar(40) not null default '',
+	PackagesAvailable bigint not null default 0)
 `
 
 const createSecurityDataTableExec = `
 	CREATE TABLE IF NOT EXISTS SecurityData (
-    SshAttackAttempts bigint not null,
-    SecurityPackagesAvailable bigint not null)
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
+    SshAttackAttempts bigint not null default 0,
+    SecurityPackagesAvailable bigint not null default 0)
 `
 
 const createStakeDataTableExec = `
 	CREATE TABLE IF NOT EXISTS StackData (
-    LiveStake bigint not null,
-    ActiveStake bigint not null,
-    Pledge bigint not null)
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
+    LiveStake bigint not null default 0,
+    ActiveStake bigint not null default 0,
+    Pledge bigint not null default 0)
 `
 
 const createOnlineDataTableExec = `
 	CREATE TABLE IF NOT EXISTS OnlineData (
-    SinceStart bigint not null,
-    Pings bigint not null,
-    NodeActive bool not null,
-	NodeActivePings bigint not null,
-	ServerActive bool not null)
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
+    SinceStart bigint not null default 0,
+    Pings bigint not null default 0,
+    NodeActive bool not null default false,
+	NodeActivePings bigint not null default 0,
+	ServerActive bool not null default false)
 `
 
 const createMemoryStateDataTableExec = `
 	CREATE TABLE IF NOT EXISTS MemoryStateData (
-    Total bigint not null,
-    Used bigint not null,
-    Buffers bigint not null,
-	Cached bigint not null,
-	Free bigint not null,
-    Available bigint not null,
-    Active bigint not null,
-	Inactive bigint not null,
-	SwapTotal bool not null,
-	SwapUsed bigint not null,
-    SwapCached bigint not null,
-    SwapFree bigint not null,
-	MemAvailableEnabled bigint not null)
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
+    Total bigint not null default 0,
+    Used bigint not null default 0,
+    Buffers bigint not null default 0,
+	Cached bigint not null default 0,
+	Free bigint not null default 0,
+    Available bigint not null default 0,
+    Active bigint not null default 0,
+	Inactive bigint not null default 0,
+	SwapTotal bool not null default false,
+	SwapUsed bigint not null default 0,
+    SwapCached bigint not null default 0,
+    SwapFree bigint not null default 0,
+	MemAvailableEnabled bigint not null default 0)
 `
 
 const createCpuStateTableExec = `
 	CREATE TABLE IF NOT EXISTS CpuStateData (
-    CpuQty bigint not null,
-    AverageWorkload float8 not null)
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
+    CpuQty bigint not null default 0,
+    AverageWorkload float8 not null default 0)
 `
 
 const createNodeStateTableExec = `
 	CREATE TABLE IF NOT EXISTS NodeStateData (
-    TipDiff bigint not null,
-    Density float8 not null)
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
+    TipDiff bigint not null default 0,
+    Density float8 not null default 0)
 `
 
 const createNodePerformanceTableExec = `
 	CREATE TABLE IF NOT EXISTS NodePerformanceData (
-    ProcessedTx bigint not null,
-    PeersIn bigint not null,
-    PeersOut bigint not null)
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
+    ProcessedTx bigint not null default 0,
+    PeersIn bigint not null default 0,
+    PeersOut bigint not null default 0)
 `
 
 func (p postgresql) CreateAllTables() error {
