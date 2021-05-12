@@ -1,4 +1,4 @@
-package db
+package structs
 
 import pb "github.com/adarocket/proto"
 

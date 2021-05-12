@@ -2,15 +2,13 @@ package save
 
 import (
 	"adarocket/controller/informer"
-	"adarocket/controller/postgresql"
-	"log"
-	"time"
 )
 
 const timeout = 10
 
-func AutoSave(server informer.InformServer) {
-	postgresql.InitDatabase()
+// make a part of InformerServer structs?
+func AutoSave(server *informer.InformServer) {
+	/*postgresql.InitDatabase()
 	db := postgresql.Postg
 
 	go func() {
@@ -62,5 +60,5 @@ func AutoSave(server informer.InformServer) {
 				}
 			}
 		}
-	}()
+	}()*/
 }
