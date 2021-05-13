@@ -6,9 +6,9 @@ import (
 
 // Config - structure of config file
 type Config struct {
-	ServerPort string `json:"server_port"`
-	Nodes      []Node `json:"nodes"`
-	DBConfig   DBConfig
+	ServerPort string   `json:"server_port"`
+	Nodes      []Node   `json:"nodes"`
+	DBConfig   DBConfig `json:"db"`
 }
 
 // Node -
