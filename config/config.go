@@ -8,6 +8,7 @@ import (
 type Config struct {
 	ServerPort string `json:"server_port"`
 	Nodes      []Node `json:"nodes"`
+	DBConfig   DBConfig
 }
 
 // Node -
@@ -15,6 +16,18 @@ type Node struct {
 	Ticker     string `json:"ticker"`
 	UUID       string `json:"uuid"`
 	Blockchain string `json:"blockchain"`
+}
+
+// DBConfig ...
+type DBConfig struct {
+	// User ...
+	User string `json:"user"`
+	// Password ...
+	Password string `json:"password"`
+	// Dbname ...
+	Dbname string `json:"dbname"`
+	// Sslmode ...
+	Sslmode string `json:"sslmode"`
 }
 
 const cConfigPath = "/etc/ada-rocket/controller.conf"
