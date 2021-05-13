@@ -1,14 +1,17 @@
 package save
 
 import (
+	"adarocket/controller/db/postgresql"
 	"adarocket/controller/informer"
+	"log"
+	"time"
 )
 
 const timeout = 10
 
 // make a part of InformerServer structs?
 func AutoSave(server *informer.InformServer) {
-	/*postgresql.InitDatabase()
+	//postgresql.InitDatabase()
 	db := postgresql.Postg
 
 	go func() {
@@ -19,46 +22,46 @@ func AutoSave(server *informer.InformServer) {
 					log.Println(err)
 				}
 
-				if err := db.CreateServerBasicData(*value.Statistic.ServerBasicData); err != nil {
+				if err := db.CreateServerBasicData(*value.Statistic.ServerBasicData, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateNodeStateData(*value.Statistic.NodeState); err != nil {
+				if err := db.CreateNodeStateData(*value.Statistic.NodeState, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateNodePerformanceData(*value.Statistic.NodePerformance); err != nil {
+				if err := db.CreateNodePerformanceData(*value.Statistic.NodePerformance, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateMemoryStateData(*value.Statistic.MemoryState); err != nil {
+				if err := db.CreateMemoryStateData(*value.Statistic.MemoryState, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateOnlineData(*value.Statistic.Online); err != nil {
+				if err := db.CreateOnlineData(*value.Statistic.Online, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateStakeInfoData(*value.Statistic.StakeInfo); err != nil {
+				if err := db.CreateStakeInfoData(*value.Statistic.StakeInfo, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateSecurityData(*value.Statistic.Security); err != nil {
+				if err := db.CreateSecurityData(*value.Statistic.Security, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateUpdatesData(*value.Statistic.Updates); err != nil {
+				if err := db.CreateUpdatesData(*value.Statistic.Updates, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateBlocksData(*value.Statistic.Blocks); err != nil {
+				if err := db.CreateBlocksData(*value.Statistic.Blocks, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateEpochData(*value.Statistic.Epoch); err != nil {
+				if err := db.CreateEpochData(*value.Statistic.Epoch, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateNodeBasicData(*value.Statistic.NodeBasicData); err != nil {
+				if err := db.CreateNodeBasicData(*value.Statistic.NodeBasicData, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateCpuStateData(*value.Statistic.CpuState); err != nil {
+				if err := db.CreateCpuStateData(*value.Statistic.CpuState, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateKesData(*value.Statistic.KesData); err != nil {
+				if err := db.CreateKesData(*value.Statistic.KesData, value.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
 			}
 		}
-	}()*/
+	}()
 }
