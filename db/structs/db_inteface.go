@@ -1,6 +1,6 @@
 package structs
 
-import pb "github.com/adarocket/proto"
+import pb "github.com/adarocket/proto/proto"
 
 type Database interface {
 	CreateAllTables() error

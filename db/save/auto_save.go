@@ -18,47 +18,47 @@ func AutoSave(server *informer.InformServer) {
 		for _ = range time.Tick(time.Minute * timeout) {
 			for _, value := range server.NodeStatistics {
 				// if already exist?
-				if err := db.CreateNodeAuthData(*value.NodeAuthData); err != nil {
+				if err := db.CreateNodeAuthData(*value.NodeInfo.NodeAuthData); err != nil {
 					log.Println(err)
 				}
 
-				if err := db.CreateServerBasicData(*value.Statistic.ServerBasicData, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateServerBasicData(*value.NodeInfo.Statistic.ServerBasicData, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateNodeStateData(*value.Statistic.NodeState, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateNodeStateData(*value.NodeInfo.Statistic.NodeState, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateNodePerformanceData(*value.Statistic.NodePerformance, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateNodePerformanceData(*value.NodeInfo.Statistic.NodePerformance, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateMemoryStateData(*value.Statistic.MemoryState, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateMemoryStateData(*value.NodeInfo.Statistic.MemoryState, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateOnlineData(*value.Statistic.Online, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateOnlineData(*value.NodeInfo.Statistic.Online, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateStakeInfoData(*value.Statistic.StakeInfo, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateStakeInfoData(*value.NodeInfo.Statistic.StakeInfo, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateSecurityData(*value.Statistic.Security, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateSecurityData(*value.NodeInfo.Statistic.Security, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateUpdatesData(*value.Statistic.Updates, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateUpdatesData(*value.NodeInfo.Statistic.Updates, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateBlocksData(*value.Statistic.Blocks, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateBlocksData(*value.NodeInfo.Statistic.Blocks, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateEpochData(*value.Statistic.Epoch, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateEpochData(*value.NodeInfo.Statistic.Epoch, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateNodeBasicData(*value.Statistic.NodeBasicData, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateNodeBasicData(*value.NodeInfo.Statistic.NodeBasicData, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateCpuStateData(*value.Statistic.CpuState, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateCpuStateData(*value.NodeInfo.Statistic.CpuState, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
-				if err := db.CreateKesData(*value.Statistic.KesData, value.NodeAuthData.Uuid); err != nil {
+				if err := db.CreateKesData(*value.NodeInfo.Statistic.KesData, value.NodeInfo.NodeAuthData.Uuid); err != nil {
 					log.Println(err)
 				}
 			}

@@ -1,8 +1,9 @@
 package postgresql
 
 import (
-	pb "github.com/adarocket/proto"
 	"log"
+
+	pb "github.com/adarocket/proto/proto"
 )
 
 const getNodeAuthQuery = `
