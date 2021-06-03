@@ -9,15 +9,12 @@ import (
 
 const timeout = 10
 
-// make a part of InformerServer structs?
 func AutoSave(server *informer.InformServer) {
-	//postgresql.InitDatabase()
 	db := postgresql.Postg
 
 	go func() {
 		for _ = range time.Tick(time.Minute * timeout) {
 			for _, value := range server.NodeStatistics {
-				// if already exist?
 				if err := db.CreateNodeAuthData(*value.NodeInfo.NodeAuthData); err != nil {
 					log.Println(err)
 				}

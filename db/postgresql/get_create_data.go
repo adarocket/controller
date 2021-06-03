@@ -125,7 +125,7 @@ const createNodeBasicDataExec = `
 func (p postgresql) CreateNodeBasicData(data pb.NodeBasicData, uuid string) error {
 	if _, err := p.dbConn.Exec(createNodeBasicDataExec,
 		uuid, data.Ticker, data.Type, data.Location, data.NodeVersion); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateNodeBasicData", err)
 		return err
 	}
 
@@ -140,7 +140,7 @@ const getServerBasicData = `
 func (p postgresql) GetServerBasicData() ([]pb.ServerBasicData, error) {
 	rows, err := p.dbConn.Query(getServerBasicData)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetServerBasicData", err)
 		return []pb.ServerBasicData{}, err
 	}
 	defer rows.Close()
@@ -150,7 +150,7 @@ func (p postgresql) GetServerBasicData() ([]pb.ServerBasicData, error) {
 		serverBasicData := pb.ServerBasicData{}
 		if err := rows.Scan(&serverBasicData.Ipv4, &serverBasicData.Ipv6,
 			&serverBasicData.LinuxName, &serverBasicData.LinuxVersion); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("serverBasicData: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -174,7 +174,7 @@ const createServerBasicDataExec = `
 func (p postgresql) CreateServerBasicData(data pb.ServerBasicData, uuid string) error {
 	if _, err := p.dbConn.Exec(createServerBasicDataExec,
 		uuid, data.Ipv4, data.Ipv6, data.LinuxName, data.LinuxVersion); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateServerBasicData", err)
 		return err
 	}
 
@@ -189,7 +189,7 @@ const getEpochDataQuery = `
 func (p postgresql) GetEpochData() ([]pb.Epoch, error) {
 	rows, err := p.dbConn.Query(getEpochDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetEpochData", err)
 		return []pb.Epoch{}, err
 	}
 	defer rows.Close()
@@ -198,7 +198,7 @@ func (p postgresql) GetEpochData() ([]pb.Epoch, error) {
 	for rows.Next() {
 		epochData := pb.Epoch{}
 		if err := rows.Scan(&epochData.EpochNumber); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("epochData: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -219,7 +219,7 @@ const createEpochDataExec = `
 func (p postgresql) CreateEpochData(data pb.Epoch, uuid string) error {
 	if _, err := p.dbConn.Exec(createEpochDataExec,
 		uuid, data.EpochNumber); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateEpochData", err)
 		return err
 	}
 
@@ -234,7 +234,7 @@ const getKesDataQuery = `
 func (p postgresql) GetKesData() ([]pb.KESData, error) {
 	rows, err := p.dbConn.Query(getKesDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetKesData", err)
 		return []pb.KESData{}, err
 	}
 	defer rows.Close()
@@ -244,7 +244,7 @@ func (p postgresql) GetKesData() ([]pb.KESData, error) {
 		kesData := pb.KESData{}
 		if err := rows.Scan(&kesData.KesCurrent,
 			&kesData.KesRemaining, &kesData.KesExpDate); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("kesData: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -267,7 +267,7 @@ const createKesDataExec = `
 func (p postgresql) CreateKesData(data pb.KESData, uuid string) error {
 	if _, err := p.dbConn.Exec(createKesDataExec,
 		uuid, data.KesCurrent, data.KesRemaining, data.KesExpDate); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateKesData", err)
 		return err
 	}
 
@@ -282,7 +282,7 @@ const getBlocksDataQuery = `
 func (p postgresql) GetBlocksData() ([]pb.Blocks, error) {
 	rows, err := p.dbConn.Query(getBlocksDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetBlocksData", err)
 		return []pb.Blocks{}, err
 	}
 	defer rows.Close()
@@ -292,7 +292,7 @@ func (p postgresql) GetBlocksData() ([]pb.Blocks, error) {
 		blockData := pb.Blocks{}
 		if err := rows.Scan(&blockData.BlockLeader,
 			&blockData.BlockAdopted, &blockData.BlockInvalid); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("blockData: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -315,7 +315,7 @@ const createBlocksDataExec = `
 func (p postgresql) CreateBlocksData(data pb.Blocks, uuid string) error {
 	if _, err := p.dbConn.Exec(createBlocksDataExec,
 		uuid, data.BlockLeader, data.BlockAdopted, data.BlockInvalid); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateBlocksData", err)
 		return err
 	}
 
@@ -330,7 +330,7 @@ const getUpdatesDataQuery = `
 func (p postgresql) GetUpdatesData() ([]pb.Updates, error) {
 	rows, err := p.dbConn.Query(getUpdatesDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetUpdatesData", err)
 		return []pb.Updates{}, err
 	}
 	defer rows.Close()
@@ -341,7 +341,7 @@ func (p postgresql) GetUpdatesData() ([]pb.Updates, error) {
 		if err := rows.Scan(&updateData.InformerActual,
 			&updateData.InformerAvailable, &updateData.UpdaterActual,
 			&updateData.UpdaterAvailable, &updateData.PackagesAvailable); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("updateData: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -367,7 +367,7 @@ func (p postgresql) CreateUpdatesData(data pb.Updates, uuid string) error {
 	if _, err := p.dbConn.Exec(createUpdatesDataExec,
 		uuid, data.InformerActual, data.InformerAvailable, data.UpdaterActual,
 		data.UpdaterAvailable, data.PackagesAvailable); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateUpdatesData", err)
 		return err
 	}
 
@@ -382,7 +382,7 @@ const getSecurityDataQuery = `
 func (p postgresql) GetSecurityData() ([]pb.Security, error) {
 	rows, err := p.dbConn.Query(getSecurityDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetSecurityData", err)
 		return []pb.Security{}, err
 	}
 	defer rows.Close()
@@ -392,7 +392,7 @@ func (p postgresql) GetSecurityData() ([]pb.Security, error) {
 		securityData := pb.Security{}
 		if err := rows.Scan(&securityData.SshAttackAttempts,
 			&securityData.SecurityPackagesAvailable); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("securityData: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -414,7 +414,7 @@ const createSecurityDataExec = `
 func (p postgresql) CreateSecurityData(data pb.Security, uuid string) error {
 	if _, err := p.dbConn.Exec(createSecurityDataExec,
 		uuid, data.SshAttackAttempts, data.SecurityPackagesAvailable); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateSecurityData", err)
 		return err
 	}
 
@@ -429,7 +429,7 @@ const getStakeInfoDataQuery = `
 func (p postgresql) GetStakeInfoData() ([]pb.StakeInfo, error) {
 	rows, err := p.dbConn.Query(getStakeInfoDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetStakeInfoData", err)
 		return []pb.StakeInfo{}, err
 	}
 	defer rows.Close()
@@ -439,7 +439,7 @@ func (p postgresql) GetStakeInfoData() ([]pb.StakeInfo, error) {
 		stakeInfoData := pb.StakeInfo{}
 		if err := rows.Scan(&stakeInfoData.LiveStake,
 			&stakeInfoData.ActiveStake, &stakeInfoData.Pledge); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("stakeInfoData: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -462,7 +462,7 @@ const createStakeInfoDataExec = `
 func (p postgresql) CreateStakeInfoData(data pb.StakeInfo, uuid string) error {
 	if _, err := p.dbConn.Exec(createStakeInfoDataExec,
 		uuid, data.LiveStake, data.ActiveStake, data.Pledge); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateStakeInfoData", err)
 		return err
 	}
 
@@ -477,7 +477,7 @@ const getOnlineDataQuery = `
 func (p postgresql) GetOnlineData() ([]pb.Online, error) {
 	rows, err := p.dbConn.Query(getOnlineDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetOnlineData", err)
 		return []pb.Online{}, err
 	}
 	defer rows.Close()
@@ -489,7 +489,7 @@ func (p postgresql) GetOnlineData() ([]pb.Online, error) {
 			&onlineData.Pings, &onlineData.NodeActive,
 			&onlineData.NodeActive, &onlineData.NodeActivePings,
 			&onlineData.ServerActive); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("onlineData: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -515,7 +515,7 @@ func (p postgresql) CreateOnlineData(data pb.Online, uuid string) error {
 	if _, err := p.dbConn.Exec(createOnlineDataExec,
 		uuid, data.SinceStart, data.Pings, data.NodeActive,
 		data.NodeActivePings, data.ServerActive); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateOnlineData", err)
 		return err
 	}
 
@@ -531,7 +531,7 @@ const getMemoryStateDataQuery = `
 func (p postgresql) GetMemoryStateData() ([]pb.MemoryState, error) {
 	rows, err := p.dbConn.Query(getMemoryStateDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetMemoryStateData", err)
 		return []pb.MemoryState{}, err
 	}
 	defer rows.Close()
@@ -547,7 +547,7 @@ func (p postgresql) GetMemoryStateData() ([]pb.MemoryState, error) {
 			&memoryStateData.Inactive, &memoryStateData.SwapTotal,
 			&memoryStateData.SwapUsed, &memoryStateData.SwapCached,
 			&memoryStateData.SwapFree, &memoryStateData.MemAvailableEnabled); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("memoryStateData: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -583,7 +583,7 @@ func (p postgresql) CreateMemoryStateData(data pb.MemoryState, uuid string) erro
 		data.Cached, data.Free, data.Available,
 		data.Active, data.Inactive, data.SwapTotal,
 		data.SwapUsed, data.SwapCached, data.SwapFree, data.MemAvailableEnabled); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateMemoryStateData", err)
 		return err
 	}
 
@@ -598,7 +598,7 @@ const getNodePerformanceDataQuery = `
 func (p postgresql) GetNodePerformanceData() ([]pb.NodePerformance, error) {
 	rows, err := p.dbConn.Query(getNodePerformanceDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetNodePerformanceData", err)
 		return []pb.NodePerformance{}, err
 	}
 	defer rows.Close()
@@ -608,7 +608,7 @@ func (p postgresql) GetNodePerformanceData() ([]pb.NodePerformance, error) {
 		nodePerformanceData := pb.NodePerformance{}
 		if err := rows.Scan(&nodePerformanceData.ProcessedTx,
 			&nodePerformanceData.PeersIn, &nodePerformanceData.PeersOut); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("nodePerformanceData: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -631,7 +631,7 @@ const createNodePerformanceDataExec = `
 func (p postgresql) CreateNodePerformanceData(data pb.NodePerformance, uuid string) error {
 	if _, err := p.dbConn.Exec(createNodePerformanceDataExec,
 		uuid, data.ProcessedTx, data.PeersIn, data.PeersOut); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateNodePerformanceData", err)
 		return err
 	}
 
@@ -646,7 +646,7 @@ const getCpuStateDataQuery = `
 func (p postgresql) GetCpuStateData() ([]pb.CPUState, error) {
 	rows, err := p.dbConn.Query(getCpuStateDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetCpuStateData", err)
 		return []pb.CPUState{}, err
 	}
 	defer rows.Close()
@@ -656,7 +656,7 @@ func (p postgresql) GetCpuStateData() ([]pb.CPUState, error) {
 		cpuStateData := pb.CPUState{}
 		if err := rows.Scan(&cpuStateData.CpuQty,
 			&cpuStateData.AverageWorkload); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("cpuStateDates: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -678,7 +678,7 @@ const createCpuStateDataExec = `
 func (p postgresql) CreateCpuStateData(data pb.CPUState, uuid string) error {
 	if _, err := p.dbConn.Exec(createCpuStateDataExec,
 		uuid, data.CpuQty, data.AverageWorkload); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateCpuStateData", err)
 		return err
 	}
 
@@ -693,7 +693,7 @@ const getNodesStateDataQuery = `
 func (p postgresql) GetNodeStateData() ([]pb.NodeState, error) {
 	rows, err := p.dbConn.Query(getNodesStateDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Fatal("GetNodeStateData", err)
 		return []pb.NodeState{}, err
 	}
 	defer rows.Close()
@@ -703,7 +703,7 @@ func (p postgresql) GetNodeStateData() ([]pb.NodeState, error) {
 		nodeStateData := pb.NodeState{}
 		if err := rows.Scan(&nodeStateData.TipDiff,
 			&nodeStateData.Density); err != nil {
-			log.Println("NodesAuth: parse err", err)
+			log.Println("nodeStateDates: parse err", err)
 			continue
 		}
 		// можно ли так делать?
@@ -713,7 +713,7 @@ func (p postgresql) GetNodeStateData() ([]pb.NodeState, error) {
 	return nodeStateDates, nil
 }
 
-const createNodeStateData = `
+const createNodeStateDataExec = `
 	INSERT INTO nodestatedata
 	(uuid, tipdiff, density) 
 	VALUES ($1, $2, $3)
@@ -723,9 +723,74 @@ const createNodeStateData = `
 `
 
 func (p postgresql) CreateNodeStateData(data pb.NodeState, uuid string) error {
-	if _, err := p.dbConn.Exec(createNodeStateData,
+	if _, err := p.dbConn.Exec(createNodeStateDataExec,
 		uuid, data.TipDiff, data.Density); err != nil {
-		log.Println("CreateNodeAuth", err)
+		log.Println("CreateNodeStateData", err)
+		return err
+	}
+
+	return nil
+}
+
+const getChiaNodeFarmingDataQuery = `
+	SELECT farmingstatus, totalchiafarmed,
+	       usertransactionfees, blockrewards,
+	       lastheightfarmed, plotcount,
+	       totalsizeofplots, estimatednetworkspace,
+	       expectedtimetowin
+	FROM chianodefarmingdata
+`
+
+func (p postgresql) GetChiaNodeFarmingData() ([]pb.ChiaNodeFarming, error) {
+	rows, err := p.dbConn.Query(getChiaNodeFarmingDataQuery)
+	if err != nil {
+		log.Fatal("GetChiaNodeFarmingData", err)
+		return []pb.ChiaNodeFarming{}, err
+	}
+	defer rows.Close()
+
+	chiaNodeFarmingDates := make([]pb.ChiaNodeFarming, 0, 10)
+	for rows.Next() {
+		chiaNodeFarmingData := pb.ChiaNodeFarming{}
+		if err := rows.Scan(&chiaNodeFarmingData.FarmingStatus,
+			&chiaNodeFarmingData.TotalSizeOfPlots, &chiaNodeFarmingData.UserTransactionFees,
+			&chiaNodeFarmingData.BlockRewards, &chiaNodeFarmingData.LastHeightFarmed,
+			&chiaNodeFarmingData.PlotCount, &chiaNodeFarmingData.TotalSizeOfPlots,
+			&chiaNodeFarmingData.TotalSizeOfPlots, &chiaNodeFarmingData.EstimatedNetworkSpace,
+			&chiaNodeFarmingData.ExpectedTimeToWin); err != nil {
+			log.Println("chiaNodeFarmingData: parse err", err)
+			continue
+		}
+		// можно ли так делать?
+		chiaNodeFarmingDates = append(chiaNodeFarmingDates, chiaNodeFarmingData)
+	}
+
+	return chiaNodeFarmingDates, nil
+}
+
+const createChiaNodeFarmingDataExec = `
+	INSERT INTO chianodefarmingdata
+	(uuid, farmingstatus, totalchiafarmed, usertransactionfees,
+	 blockrewards, lastheightfarmed,
+	 plotcount, totalsizeofplots,
+	 estimatednetworkspace, expectedtimetowin)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET farmingstatus = excluded.farmingstatus,
+  	    totalchiafarmed = excluded.totalchiafarmed,
+  	    usertransactionfees = excluded.usertransactionfees,
+  	    blockrewards = excluded.blockrewards,
+  	    lastheightfarmed = excluded.blockrewards,
+  	    plotcount = excluded.plotcount,
+  	    totalsizeofplots = excluded.totalsizeofplots,
+  	    estimatednetworkspace = excluded.estimatednetworkspace,
+  	    expectedtimetowin = excluded.expectedtimetowin;
+`
+
+func (p postgresql) CreateChiaNodeFarmingData(data pb.ChiaNodeFarming, uuid string) error {
+	if _, err := p.dbConn.Exec(createChiaNodeFarmingDataExec,
+		uuid); err != nil {
+		log.Println("CreateChiaNodeFarmingData", err)
 		return err
 	}
 

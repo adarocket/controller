@@ -124,6 +124,20 @@ const createNodePerformanceTableExec = `
     PeersOut bigint not null default 0)
 `
 
+const createChiaNodeFarmingTableExec = `
+	CREATE TABLE IF NOT EXISTS ChiaNodeFarmingData (
+	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid),
+	FarmingStatus varchar(40) not null default '',
+	TotalChiaFarmed float8 not null default 0,
+	UserTransactionFees float8 not null default 0,
+	BlockRewards float8 not null default 0,
+	LastHeightFarmed bigint not null default 0,
+	PlotCount bigint not null default 0,
+	TotalSizeOfPlots bigint not null default 0,
+	EstimatedNetworkSpace bigint not null default 0,
+	ExpectedTimeToWin varchar(40) not null default '')
+`
+
 func (p postgresql) CreateAllTables() error {
 	if _, err := p.dbConn.Exec(createNodeAuthTableExec); err != nil {
 		log.Println("CreateNodeAuthTable", err)
@@ -136,64 +150,68 @@ func (p postgresql) CreateAllTables() error {
 	}
 
 	if _, err := p.dbConn.Exec(createServerBasicDataTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createServerBasicDataTableExec", err)
 		return err
 	}
 
 	if _, err := p.dbConn.Exec(createEpochDataTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createEpochDataTableExec", err)
 		return err
 	}
 
 	if _, err := p.dbConn.Exec(createKesDataTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createKesDataTableExec", err)
 		return err
 	}
 
 	if _, err := p.dbConn.Exec(createBlocksDataTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createBlocksDataTableExec", err)
 		return err
 	}
 
 	if _, err := p.dbConn.Exec(createUpdatesDataTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createUpdatesDataTableExec", err)
 		return err
 	}
 
 	if _, err := p.dbConn.Exec(createSecurityDataTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createSecurityDataTableExec", err)
 		return err
 	}
 
 	if _, err := p.dbConn.Exec(createStakeDataTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createStakeDataTableExec", err)
 		return err
 	}
 
 	if _, err := p.dbConn.Exec(createOnlineDataTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createOnlineDataTableExec", err)
 		return err
 	}
 
 	if _, err := p.dbConn.Exec(createMemoryStateDataTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createMemoryStateDataTableExec", err)
 		return err
 	}
 
 	if _, err := p.dbConn.Exec(createCpuStateTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createCpuStateTableExec", err)
 		return err
 	}
 
 	if _, err := p.dbConn.Exec(createNodeStateTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createNodeStateTableExec", err)
 		return err
 	}
 
 	if _, err := p.dbConn.Exec(createNodePerformanceTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+		log.Println("createNodePerformanceTableExec", err)
 		return err
 	}
 
+	if _, err := p.dbConn.Exec(createChiaNodeFarmingTableExec); err != nil {
+		log.Println("createChiaNodeFarmingTableExec", err)
+		return err
+	}
 	return nil
 }

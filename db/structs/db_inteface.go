@@ -18,6 +18,7 @@ type Database interface {
 	NodePerformance
 	CpuState
 	NodeState
+	ChiaNodeFarming
 }
 
 type NodeAuthData interface {
@@ -90,4 +91,9 @@ type NodeState interface {
 type NodePerformance interface {
 	GetNodePerformanceData() ([]pb.NodePerformance, error)
 	CreateNodePerformanceData(data pb.NodePerformance, uuid string) error
+}
+
+type ChiaNodeFarming interface {
+	GetChiaNodeFarmingData() ([]pb.ChiaNodeFarming, error)
+	CreateChiaNodeFarmingData(data pb.ChiaNodeFarming, uuid string) error
 }
