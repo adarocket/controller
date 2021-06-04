@@ -1,6 +1,8 @@
 package main
 
 import (
+	"adarocket/controller/db/postgresql"
+	"adarocket/controller/db/save"
 	"log"
 	"net"
 	"time"
@@ -52,6 +54,10 @@ func main() {
 	chiaServer := informer.NewChiaInformServer(jwtManager, loadedConfig)
 
 	interceptor := auth.NewAuthInterceptor(jwtManager, accessiblePermissions())
+
+	postgresql.InitDatabase(loadedConfig.DBConfig)
+	postgresql.Postg.CreateAllTables()
+	save.AutoSave(informServer)
 
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),
