@@ -1,7 +1,6 @@
 package postgresql
 
 import (
-	"errors"
 	"log"
 
 	pb "github.com/adarocket/proto/proto"
@@ -43,11 +42,7 @@ const createNodeAuthExec = `
   	SET status = excluded.status;
 `
 
-func (p postgresql) CreateNodeAuthData(data *pb.NodeAuthData) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateNodeAuthData(data pb.NodeAuthData) error {
 	if _, err := p.dbConn.Exec(createNodeAuthExec,
 		data.Ticker, data.Uuid, data.Status); err != nil {
 		log.Println("CreateNodeAuth", err)
@@ -63,11 +58,7 @@ const updateNodeAuthData = `
 	WHERE uuid = $3
 `
 
-func (p postgresql) UpdateNodeAuthData(data *pb.NodeAuthData) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) UpdateNodeAuthData(data pb.NodeAuthData) error {
 	_, err := p.dbConn.Exec(updateNodeAuthData,
 		data.Ticker, data.Status)
 	if err != nil {
@@ -83,11 +74,7 @@ const deleteNodeAuthExec = `
 	WHERE uuid = $1
 `
 
-func (p postgresql) DeleteNodeAuthData(data *pb.NodeAuthData) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) DeleteNodeAuthData(data pb.NodeAuthData) error {
 	if _, err := p.dbConn.Exec(deleteNodeAuthExec, data.Ticker); err != nil {
 		log.Println("DeleteNodeAuth", err)
 		return err
@@ -135,11 +122,7 @@ const createNodeBasicDataExec = `
   	    nodeversion = excluded.nodeversion;
 `
 
-func (p postgresql) CreateNodeBasicData(data *pb.NodeBasicData, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateNodeBasicData(data pb.NodeBasicData, uuid string) error {
 	if _, err := p.dbConn.Exec(createNodeBasicDataExec,
 		uuid, data.Ticker, data.Type, data.Location, data.NodeVersion); err != nil {
 		log.Println("CreateNodeBasicData", err)
@@ -188,11 +171,7 @@ const createServerBasicDataExec = `
   	    linuxversion = excluded.linuxversion;
 `
 
-func (p postgresql) CreateServerBasicData(data *pb.ServerBasicData, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateServerBasicData(data pb.ServerBasicData, uuid string) error {
 	if _, err := p.dbConn.Exec(createServerBasicDataExec,
 		uuid, data.Ipv4, data.Ipv6, data.LinuxName, data.LinuxVersion); err != nil {
 		log.Println("CreateServerBasicData", err)
@@ -237,11 +216,7 @@ const createEpochDataExec = `
   	SET epochnumber = excluded.epochnumber;
 `
 
-func (p postgresql) CreateEpochData(data *pb.Epoch, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateEpochData(data pb.Epoch, uuid string) error {
 	if _, err := p.dbConn.Exec(createEpochDataExec,
 		uuid, data.EpochNumber); err != nil {
 		log.Println("CreateEpochData", err)
@@ -289,11 +264,7 @@ const createKesDataExec = `
   	    kesexpdate = excluded.kesexpdate;  	    
 `
 
-func (p postgresql) CreateKesData(data *pb.KESData, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateKesData(data pb.KESData, uuid string) error {
 	if _, err := p.dbConn.Exec(createKesDataExec,
 		uuid, data.KesCurrent, data.KesRemaining, data.KesExpDate); err != nil {
 		log.Println("CreateKesData", err)
@@ -341,11 +312,7 @@ const createBlocksDataExec = `
   	    blockinvalid = excluded.blockinvalid;  
 `
 
-func (p postgresql) CreateBlocksData(data *pb.Blocks, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateBlocksData(data pb.Blocks, uuid string) error {
 	if _, err := p.dbConn.Exec(createBlocksDataExec,
 		uuid, data.BlockLeader, data.BlockAdopted, data.BlockInvalid); err != nil {
 		log.Println("CreateBlocksData", err)
@@ -396,11 +363,7 @@ const createUpdatesDataExec = `
   	    packagesavailable = excluded.packagesavailable;
 `
 
-func (p postgresql) CreateUpdatesData(data *pb.Updates, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateUpdatesData(data pb.Updates, uuid string) error {
 	if _, err := p.dbConn.Exec(createUpdatesDataExec,
 		uuid, data.InformerActual, data.InformerAvailable, data.UpdaterActual,
 		data.UpdaterAvailable, data.PackagesAvailable); err != nil {
@@ -448,11 +411,7 @@ const createSecurityDataExec = `
   	    securitypackagesavailable = excluded.securitypackagesavailable;
 `
 
-func (p postgresql) CreateSecurityData(data *pb.Security, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateSecurityData(data pb.Security, uuid string) error {
 	if _, err := p.dbConn.Exec(createSecurityDataExec,
 		uuid, data.SshAttackAttempts, data.SecurityPackagesAvailable); err != nil {
 		log.Println("CreateSecurityData", err)
@@ -500,11 +459,7 @@ const createStakeInfoDataExec = `
   	    pledge = excluded.pledge;
 `
 
-func (p postgresql) CreateStakeInfoData(data *pb.StakeInfo, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateStakeInfoData(data pb.StakeInfo, uuid string) error {
 	if _, err := p.dbConn.Exec(createStakeInfoDataExec,
 		uuid, data.LiveStake, data.ActiveStake, data.Pledge); err != nil {
 		log.Println("CreateStakeInfoData", err)
@@ -556,11 +511,7 @@ const createOnlineDataExec = `
   	    serveractive = excluded.serveractive;
 `
 
-func (p postgresql) CreateOnlineData(data *pb.Online, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateOnlineData(data pb.Online, uuid string) error {
 	if _, err := p.dbConn.Exec(createOnlineDataExec,
 		uuid, data.SinceStart, data.Pings, data.NodeActive,
 		data.NodeActivePings, data.ServerActive); err != nil {
@@ -626,11 +577,7 @@ const createMemoryStateDataExec = `
   	    memavailableenabled = excluded.memavailableenabled;
 `
 
-func (p postgresql) CreateMemoryStateData(data *pb.MemoryState, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateMemoryStateData(data pb.MemoryState, uuid string) error {
 	if _, err := p.dbConn.Exec(createMemoryStateDataExec,
 		uuid, data.Total, data.Used, data.Buffers,
 		data.Cached, data.Free, data.Available,
@@ -681,11 +628,7 @@ const createNodePerformanceDataExec = `
   	    peersout = excluded.peersout;
 `
 
-func (p postgresql) CreateNodePerformanceData(data *pb.NodePerformance, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateNodePerformanceData(data pb.NodePerformance, uuid string) error {
 	if _, err := p.dbConn.Exec(createNodePerformanceDataExec,
 		uuid, data.ProcessedTx, data.PeersIn, data.PeersOut); err != nil {
 		log.Println("CreateNodePerformanceData", err)
@@ -732,11 +675,7 @@ const createCpuStateDataExec = `
   	    averageworkload = excluded.averageworkload;
 `
 
-func (p postgresql) CreateCpuStateData(data *pb.CPUState, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateCpuStateData(data pb.CPUState, uuid string) error {
 	if _, err := p.dbConn.Exec(createCpuStateDataExec,
 		uuid, data.CpuQty, data.AverageWorkload); err != nil {
 		log.Println("CreateCpuStateData", err)
@@ -783,11 +722,7 @@ const createNodeStateDataExec = `
   	    density = excluded.density;
 `
 
-func (p postgresql) CreateNodeStateData(data *pb.NodeState, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateNodeStateData(data pb.NodeState, uuid string) error {
 	if _, err := p.dbConn.Exec(createNodeStateDataExec,
 		uuid, data.TipDiff, data.Density); err != nil {
 		log.Println("CreateNodeStateData", err)
@@ -852,11 +787,7 @@ const createChiaNodeFarmingDataExec = `
   	    expectedtimetowin = excluded.expectedtimetowin;
 `
 
-func (p postgresql) CreateChiaNodeFarmingData(data *pb.ChiaNodeFarming, uuid string) error {
-	if data == nil {
-		log.Println("data == nil")
-		return errors.New("nil data")
-	}
+func (p postgresql) CreateChiaNodeFarmingData(data pb.ChiaNodeFarming, uuid string) error {
 	if _, err := p.dbConn.Exec(createChiaNodeFarmingDataExec,
 		uuid); err != nil {
 		log.Println("CreateChiaNodeFarmingData", err)
