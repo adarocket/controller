@@ -95,7 +95,7 @@ const createMemoryStateDataTableExec = `
     Available bigint not null default 0,
     Active bigint not null default 0,
 	Inactive bigint not null default 0,
-	SwapTotal bool not null default false,
+	SwapTotal bigint not null default 0,
 	SwapUsed bigint not null default 0,
     SwapCached bigint not null default 0,
     SwapFree bigint not null default 0,
