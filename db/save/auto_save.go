@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-const timeout = 10
+const timeout = 1
 
 var db structs.Database
 
