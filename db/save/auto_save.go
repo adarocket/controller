@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-const timeout = 10
+const timeout = 1
 
 func AutoSave(server *informer.InformServer) {
 	db := postgresql.Postg

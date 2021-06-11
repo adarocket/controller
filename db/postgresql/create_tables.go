@@ -99,7 +99,7 @@ const createMemoryStateDataTableExec = `
 	SwapUsed bigint not null default 0,
     SwapCached bigint not null default 0,
     SwapFree bigint not null default 0,
-	MemAvailableEnabled bigint not null default 0)
+	MemAvailableEnabled bool not null default false)
 `
 
 const createCpuStateTableExec = `

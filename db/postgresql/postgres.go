@@ -16,11 +16,17 @@ func InitDatabase(config config.DBConfig) {
 	"postgres", "postgresql", "postgres", "disable")*/
 	connStr := fmt.Sprintf(`user=%s password=%s dbname=%s sslmode=%s`,
 		config.User, config.Password, config.Dbname, config.Sslmode)
+	fmt.Println(connStr)
 	// connStr := "user = postgres password=postgresql dbname=crypto sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	if err = db.Ping(); err != nil {
+		log.Fatal(err)
+	}
+
 	Postg.dbConn = db
 }
 
