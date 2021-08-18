@@ -3,23 +3,28 @@ package auth
 import (
 	"context"
 
-	pb "github.com/adarocket/proto"
+	pb "github.com/adarocket/proto/proto-gen/auth"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"adarocket/controller/user"
+	"github.com/adarocket/controller/user"
 )
 
 // AuthServer -
 type AuthServer struct {
 	userStore  user.UserStore
 	jwtManager *JWTManager
+
+	pb.UnimplementedAuthServiceServer
 }
 
 // NewAuthServer -
 func NewAuthServer(userStore user.UserStore, jwtManager *JWTManager) *AuthServer {
-	return &AuthServer{userStore, jwtManager}
+	return &AuthServer{
+		userStore:  userStore,
+		jwtManager: jwtManager,
+	}
 }
 
 // Login -
