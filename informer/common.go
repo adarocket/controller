@@ -35,6 +35,8 @@ func (server *CommonInformServer) GetNodeList(ctx context.Context, request *pb.G
 		nodeAuthData := new(pb.NodeAuthData)
 		nodeAuthData.Ticker = n.Ticker
 		nodeAuthData.Uuid = n.UUID
+		nodeAuthData.Blockchain = n.Blockchain
+
 		response.NodeAuthData = append(response.NodeAuthData, nodeAuthData)
 	}
 

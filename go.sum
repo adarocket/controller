@@ -6,6 +6,8 @@ github.com/adarocket/proto v0.3.2 h1:g5QjXOA9VNUqC/MYg8FtvxxqRx6ZmWeMuy0id6x63J4
 github.com/adarocket/proto v0.3.2/go.mod h1:UvUUnSfmYiRXTJkcSfQq3bIWvw++dpDMB7AEcvMRqME=
 github.com/adarocket/proto v0.3.3 h1:4qiIeslRgQfYivu/NS5vjyj8N/fg1TRb0rKoHUGwt1Y=
 github.com/adarocket/proto v0.3.3/go.mod h1:EJFz55bc/AsOUfAupyPJZxoNUEPw+gtbCSi503KsUls=
+github.com/adarocket/proto v0.3.4 h1:fSOqQ+J49+9A+JjqXafg3raniQWVFCkYpgbJxeYk3fk=
+github.com/adarocket/proto v0.3.4/go.mod h1:EJFz55bc/AsOUfAupyPJZxoNUEPw+gtbCSi503KsUls=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
 github.com/bykovme/goconfig v0.0.0-20170717154220-caa70d3abfca h1:HvoZBF8ym+TVmTXAtrwld9dKJOYkWJnB4QMyOCCd7Qk=
 github.com/bykovme/goconfig v0.0.0-20170717154220-caa70d3abfca/go.mod h1:8FgfY3borBTXpAYc/KyCh7tq4CzJ8EbH6VLsRR1ugPs=
@@ -112,6 +114,7 @@ google.golang.org/grpc v1.33.1/go.mod h1:fr5YgcSWrqhRRxogOsw7RzIpsmvOZ6IcH4kBYTp
 google.golang.org/grpc v1.35.0 h1:TwIQcH3es+MojMVojxxfQ3l3OF2KzlRxML2xZq0kRo8=
 google.golang.org/grpc v1.35.0/go.mod h1:qjiiYl8FncCW8feJPdyg3v6XW24KsRHe+dy9BAGRRjU=
 google.golang.org/grpc v1.36.0/go.mod h1:qjiiYl8FncCW8feJPdyg3v6XW24KsRHe+dy9BAGRRjU=
+google.golang.org/grpc v1.37.1 h1:ARnQJNWxGyYJpdf/JXscNlQr/uv607ZPU9Z7ogHi+iI=
 google.golang.org/grpc v1.37.1/go.mod h1:NREThFqKR1f3iQ6oBuvc5LadQuXVGo9rkm5ZGrQdJfM=
 google.golang.org/grpc v1.40.0 h1:AGJ0Ih4mHjSeibYkFGh1dD9KJ/eOtZ93I6hoHhukQ5Q=
 google.golang.org/grpc v1.40.0/go.mod h1:ogyxbiOoUXAkP+4+xa6PZSE9DZgIHtSpzjDTB9KAK34=
