@@ -12,8 +12,9 @@ type Config struct {
 
 // Node -
 type Node struct {
-	Ticker string `json:"ticker"`
-	UUID   string `json:"uuid"`
+	Ticker     string `json:"ticker"`
+	UUID       string `json:"uuid"`
+	Blockchain string `json:"blockchain"`
 }
 
 const cConfigPath = "/etc/ada-rocket/controller.conf"

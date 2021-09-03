@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"adarocket/controller/user"
+	"github.com/adarocket/controller/user"
 
 	"github.com/dgrijalva/jwt-go"
 )

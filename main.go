@@ -5,12 +5,15 @@ import (
 	"net"
 	"time"
 
-	"adarocket/controller/auth"
-	"adarocket/controller/config"
-	"adarocket/controller/informer"
-	"adarocket/controller/user"
+	"github.com/adarocket/controller/auth"
+	"github.com/adarocket/controller/config"
+	"github.com/adarocket/controller/informer"
+	"github.com/adarocket/controller/user"
 
-	pb "github.com/adarocket/proto"
+	authPB "github.com/adarocket/proto/proto-gen/auth"
+	cardanoPB "github.com/adarocket/proto/proto-gen/cardano"
+	chiaPB "github.com/adarocket/proto/proto-gen/chia"
+	commonPB "github.com/adarocket/proto/proto-gen/common"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
@@ -21,7 +24,7 @@ const (
 	tokenDuration = 15 * time.Minute
 )
 
-var loadedConfig config.Config
+// var loadedConfig config.Config
 
 func main() {
 	loadedConfig, err := config.LoadConfig()
@@ -29,27 +32,37 @@ func main() {
 		panic(err)
 	}
 
-	listener, err := net.Listen("tcp", ":"+loadedConfig.ServerPort)
-	if err != nil {
-		grpclog.Fatalf("failed to listen: %v", err)
-	}
-
 	userStore := user.NewInMemoryUserStore()
 	if err := seedUsers(userStore); err != nil {
 		log.Fatal("cannot seed users: ", err)
 	}
 
+	listener, err := net.Listen("tcp", ":"+loadedConfig.ServerPort)
+	if err != nil {
+		grpclog.Fatalf("failed to listen: %v", err)
+	}
+
+	// ----------------------------------------------------------------------
+
 	jwtManager := auth.NewJWTManager(secretKey, tokenDuration)
 	authServer := auth.NewAuthServer(userStore, jwtManager)
-	informServer := informer.NewInformServer(jwtManager, loadedConfig)
+
+	commonServer := informer.NewCommonInformServer(jwtManager, loadedConfig)
+	cardanoServer := informer.NewCardanoInformServer(jwtManager, loadedConfig)
+	chiaServer := informer.NewChiaInformServer(jwtManager, loadedConfig)
+
 	interceptor := auth.NewAuthInterceptor(jwtManager, accessiblePermissions())
 
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),
 	)
 
-	pb.RegisterAuthServiceServer(grpcServer, authServer)
-	pb.RegisterInformerServer(grpcServer, informServer)
+	authPB.RegisterAuthServiceServer(grpcServer, authServer)
+	commonPB.RegisterControllerServer(grpcServer, commonServer)
+	cardanoPB.RegisterCardanoServer(grpcServer, cardanoServer)
+	chiaPB.RegisterChiaServer(grpcServer, chiaServer)
+
+	// ----------------------------------------------------------------------
 
 	grpcServer.Serve(listener)
 }
