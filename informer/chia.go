@@ -2,6 +2,7 @@ package informer
 
 import (
 	"context"
+	"time"
 
 	"github.com/adarocket/controller/auth"
 	"github.com/adarocket/controller/config"
@@ -20,17 +21,19 @@ type ChiaInformServer struct {
 	NodeStatistics map[string]*chiaPB.SaveStatisticRequest
 	loadedConfig   config.Config
 
-	jwtManager *auth.JWTManager
+	jwtManager         *auth.JWTManager
+	commonInformServer *CommonInformServer
 
 	chiaPB.UnimplementedChiaServer
 }
 
 // NewChiaInformServer -
-func NewChiaInformServer(jwtManager *auth.JWTManager, loadedConfig config.Config) *ChiaInformServer {
+func NewChiaInformServer(jwtManager *auth.JWTManager, loadedConfig config.Config, commonInformServer *CommonInformServer) *ChiaInformServer {
 	return &ChiaInformServer{
-		NodeStatistics: make(map[string]*chiaPB.SaveStatisticRequest),
-		jwtManager:     jwtManager,
-		loadedConfig:   loadedConfig,
+		NodeStatistics:     make(map[string]*chiaPB.SaveStatisticRequest),
+		jwtManager:         jwtManager,
+		loadedConfig:       loadedConfig,
+		commonInformServer: commonInformServer,
 	}
 }
 
@@ -87,6 +90,8 @@ func (server *ChiaInformServer) SaveStatistic(ctx context.Context, request *chia
 	if request.Statistic.ChiaNodeFarming != nil {
 		nodeStatistic.Statistic.ChiaNodeFarming = request.Statistic.ChiaNodeFarming
 	}
+
+	server.commonInformServer.NodeLastUpdate[request.NodeAuthData.Uuid] = time.Now()
 
 	server.NodeStatistics[request.NodeAuthData.Uuid] = nodeStatistic
 

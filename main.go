@@ -48,8 +48,8 @@ func main() {
 	authServer := auth.NewAuthServer(userStore, jwtManager)
 
 	commonServer := informer.NewCommonInformServer(jwtManager, loadedConfig)
-	cardanoServer := informer.NewCardanoInformServer(jwtManager, loadedConfig)
-	chiaServer := informer.NewChiaInformServer(jwtManager, loadedConfig)
+	cardanoServer := informer.NewCardanoInformServer(jwtManager, loadedConfig, commonServer)
+	chiaServer := informer.NewChiaInformServer(jwtManager, loadedConfig, commonServer)
 
 	interceptor := auth.NewAuthInterceptor(jwtManager, accessiblePermissions())
 

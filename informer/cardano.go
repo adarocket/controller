@@ -2,6 +2,7 @@ package informer
 
 import (
 	"context"
+	"time"
 
 	"github.com/adarocket/controller/auth"
 	"github.com/adarocket/controller/config"
@@ -20,17 +21,19 @@ type CardanoInformServer struct {
 	NodeStatistics map[string]*cardanoPB.SaveStatisticRequest
 	loadedConfig   config.Config
 
-	jwtManager *auth.JWTManager
+	jwtManager         *auth.JWTManager
+	commonInformServer *CommonInformServer
 
 	cardanoPB.UnimplementedCardanoServer
 }
 
 // NewCardanoInformServer -
-func NewCardanoInformServer(jwtManager *auth.JWTManager, loadedConfig config.Config) *CardanoInformServer {
+func NewCardanoInformServer(jwtManager *auth.JWTManager, loadedConfig config.Config, commonInformServer *CommonInformServer) *CardanoInformServer {
 	return &CardanoInformServer{
-		NodeStatistics: make(map[string]*cardanoPB.SaveStatisticRequest),
-		jwtManager:     jwtManager,
-		loadedConfig:   loadedConfig,
+		NodeStatistics:     make(map[string]*cardanoPB.SaveStatisticRequest),
+		jwtManager:         jwtManager,
+		loadedConfig:       loadedConfig,
+		commonInformServer: commonInformServer,
 	}
 }
 
@@ -109,6 +112,8 @@ func (server *CardanoInformServer) SaveStatistic(ctx context.Context, request *c
 	if request.Statistic.NodePerformance != nil {
 		nodeStatistic.Statistic.NodePerformance = request.Statistic.NodePerformance
 	}
+
+	server.commonInformServer.NodeLastUpdate[request.NodeAuthData.Uuid] = time.Now()
 
 	server.NodeStatistics[request.NodeAuthData.Uuid] = nodeStatistic
 
