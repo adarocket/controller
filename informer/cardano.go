@@ -7,7 +7,7 @@ import (
 	"github.com/adarocket/controller/config"
 	"github.com/adarocket/controller/helpers"
 
-	pb "github.com/adarocket/proto/proto-gen/cardano"
+	cardanoPB "github.com/adarocket/proto/proto-gen/cardano"
 	commonPB "github.com/adarocket/proto/proto-gen/common"
 
 	"google.golang.org/grpc/codes"
@@ -17,31 +17,31 @@ import (
 
 // CardanoInformServer -
 type CardanoInformServer struct {
-	NodeStatistics map[string]*pb.SaveStatisticRequest
+	NodeStatistics map[string]*cardanoPB.SaveStatisticRequest
 	loadedConfig   config.Config
 
 	jwtManager *auth.JWTManager
 
-	pb.UnimplementedCardanoServer
+	cardanoPB.UnimplementedCardanoServer
 }
 
 // NewCardanoInformServer -
 func NewCardanoInformServer(jwtManager *auth.JWTManager, loadedConfig config.Config) *CardanoInformServer {
 	return &CardanoInformServer{
-		NodeStatistics: make(map[string]*pb.SaveStatisticRequest),
+		NodeStatistics: make(map[string]*cardanoPB.SaveStatisticRequest),
 		jwtManager:     jwtManager,
 		loadedConfig:   loadedConfig,
 	}
 }
 
 // SaveStatistic -
-func (server *CardanoInformServer) SaveStatistic(ctx context.Context, request *pb.SaveStatisticRequest) (response *pb.SaveStatisticResponse, err error) {
+func (server *CardanoInformServer) SaveStatistic(ctx context.Context, request *cardanoPB.SaveStatisticRequest) (response *cardanoPB.SaveStatisticResponse, err error) {
 	// request.NodeAuthData.Ticker
 	// request.NodeAuthData.Uuid
 	// server.loadedConfig.Nodes
 
 	if !helpers.Contains(server.loadedConfig.Nodes, request.NodeAuthData.Ticker, request.NodeAuthData.Uuid) {
-		response = &pb.SaveStatisticResponse{
+		response = &cardanoPB.SaveStatisticResponse{
 			Status: "Error",
 		}
 		return response, nil
@@ -49,8 +49,8 @@ func (server *CardanoInformServer) SaveStatistic(ctx context.Context, request *p
 
 	nodeStatistic := server.NodeStatistics[request.NodeAuthData.Uuid]
 	if nodeStatistic == nil {
-		nodeStatistic = new(pb.SaveStatisticRequest)
-		nodeStatistic.Statistic = new(pb.Statistic)
+		nodeStatistic = new(cardanoPB.SaveStatisticRequest)
+		nodeStatistic.Statistic = new(cardanoPB.Statistic)
 		nodeStatistic.NodeAuthData = new(commonPB.NodeAuthData)
 	}
 
@@ -114,7 +114,7 @@ func (server *CardanoInformServer) SaveStatistic(ctx context.Context, request *p
 
 	// request
 
-	response = &pb.SaveStatisticResponse{
+	response = &cardanoPB.SaveStatisticResponse{
 		Status: "Ok",
 	}
 
@@ -122,7 +122,7 @@ func (server *CardanoInformServer) SaveStatistic(ctx context.Context, request *p
 }
 
 // GetStatistic -
-func (server *CardanoInformServer) GetStatistic(ctx context.Context, request *pb.GetStatisticRequest) (response *pb.SaveStatisticRequest, err error) {
+func (server *CardanoInformServer) GetStatistic(ctx context.Context, request *cardanoPB.GetStatisticRequest) (response *cardanoPB.SaveStatisticRequest, err error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return response, status.Errorf(codes.Unauthenticated, "metadata is not provided")
@@ -138,8 +138,8 @@ func (server *CardanoInformServer) GetStatistic(ctx context.Context, request *pb
 		return response, status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
 	}
 
-	response = new(pb.SaveStatisticRequest)
-	response.Statistic = new(pb.Statistic)
+	response = new(cardanoPB.SaveStatisticRequest)
+	response.Statistic = new(cardanoPB.Statistic)
 	response.NodeAuthData = new(commonPB.NodeAuthData)
 
 	node := server.NodeStatistics[request.Uuid]

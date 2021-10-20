@@ -7,7 +7,7 @@ import (
 	"github.com/adarocket/controller/config"
 	"github.com/adarocket/controller/helpers"
 
-	pb "github.com/adarocket/proto/proto-gen/chia"
+	chiaPB "github.com/adarocket/proto/proto-gen/chia"
 	commonPB "github.com/adarocket/proto/proto-gen/common"
 
 	"google.golang.org/grpc/codes"
@@ -17,27 +17,27 @@ import (
 
 // ChiaInformServer -
 type ChiaInformServer struct {
-	NodeStatistics map[string]*pb.SaveStatisticRequest
+	NodeStatistics map[string]*chiaPB.SaveStatisticRequest
 	loadedConfig   config.Config
 
 	jwtManager *auth.JWTManager
 
-	pb.UnimplementedChiaServer
+	chiaPB.UnimplementedChiaServer
 }
 
 // NewChiaInformServer -
 func NewChiaInformServer(jwtManager *auth.JWTManager, loadedConfig config.Config) *ChiaInformServer {
 	return &ChiaInformServer{
-		NodeStatistics: make(map[string]*pb.SaveStatisticRequest),
+		NodeStatistics: make(map[string]*chiaPB.SaveStatisticRequest),
 		jwtManager:     jwtManager,
 		loadedConfig:   loadedConfig,
 	}
 }
 
 // SaveStatistic -
-func (server *ChiaInformServer) SaveStatistic(ctx context.Context, request *pb.SaveStatisticRequest) (response *pb.SaveStatisticResponse, err error) {
+func (server *ChiaInformServer) SaveStatistic(ctx context.Context, request *chiaPB.SaveStatisticRequest) (response *chiaPB.SaveStatisticResponse, err error) {
 	if !helpers.Contains(server.loadedConfig.Nodes, request.NodeAuthData.Ticker, request.NodeAuthData.Uuid) {
-		response = &pb.SaveStatisticResponse{
+		response = &chiaPB.SaveStatisticResponse{
 			Status: "Error",
 		}
 		return response, nil
@@ -45,8 +45,8 @@ func (server *ChiaInformServer) SaveStatistic(ctx context.Context, request *pb.S
 
 	nodeStatistic := server.NodeStatistics[request.NodeAuthData.Uuid]
 	if nodeStatistic == nil {
-		nodeStatistic = new(pb.SaveStatisticRequest)
-		nodeStatistic.Statistic = new(pb.Statistic)
+		nodeStatistic = new(chiaPB.SaveStatisticRequest)
+		nodeStatistic.Statistic = new(chiaPB.Statistic)
 		nodeStatistic.NodeAuthData = new(commonPB.NodeAuthData)
 	}
 
@@ -92,7 +92,7 @@ func (server *ChiaInformServer) SaveStatistic(ctx context.Context, request *pb.S
 
 	// request
 
-	response = &pb.SaveStatisticResponse{
+	response = &chiaPB.SaveStatisticResponse{
 		Status: "Ok",
 	}
 
@@ -100,7 +100,7 @@ func (server *ChiaInformServer) SaveStatistic(ctx context.Context, request *pb.S
 }
 
 // GetStatistic -
-func (server *ChiaInformServer) GetStatistic(ctx context.Context, request *pb.GetStatisticRequest) (response *pb.SaveStatisticRequest, err error) {
+func (server *ChiaInformServer) GetStatistic(ctx context.Context, request *chiaPB.GetStatisticRequest) (response *chiaPB.SaveStatisticRequest, err error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return response, status.Errorf(codes.Unauthenticated, "metadata is not provided")
@@ -116,8 +116,8 @@ func (server *ChiaInformServer) GetStatistic(ctx context.Context, request *pb.Ge
 		return response, status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
 	}
 
-	response = new(pb.SaveStatisticRequest)
-	response.Statistic = new(pb.Statistic)
+	response = new(chiaPB.SaveStatisticRequest)
+	response.Statistic = new(chiaPB.Statistic)
 	response.NodeAuthData = new(commonPB.NodeAuthData)
 
 	node := server.NodeStatistics[request.Uuid]
