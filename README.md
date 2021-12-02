@@ -66,4 +66,9 @@ If you have a firewall installed, you need to open port 5300. To do this, you ne
 sudo ufw allow 5300
 ```
 
+### Black Rocket Community Support
+
+Feel free to join our community channel on telegram: https://t.me/+R6gKUjtqMVY1OTBi
+
+
 
