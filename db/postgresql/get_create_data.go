@@ -2,6 +2,7 @@ package postgresql
 
 import (
 	"log"
+	"time"
 
 	cardanoPb "github.com/adarocket/proto/proto-gen/cardano"
 	commonPB "github.com/adarocket/proto/proto-gen/common"
@@ -37,15 +38,15 @@ func (p Postgresql) GetNodeAuthData() ([]commonPB.NodeAuthData, error) {
 
 const createNodeAuthExec = `
 	INSERT INTO NodeAuth 
-	(Ticker, Uuid, Status) 
-	VALUES ($1, $2, $3)
+	(Ticker, Uuid, Status, LastUpdate) 
+	VALUES ($1, $2, $3, $4)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET status = excluded.status;
 `
 
 func (p Postgresql) CreateNodeAuthData(data commonPB.NodeAuthData) error {
 	if _, err := p.dbConn.Exec(createNodeAuthExec,
-		data.Ticker, data.Uuid, data.Status); err != nil {
+		data.Ticker, data.Uuid, data.Status, time.Now()); err != nil {
 		log.Println("CreateNodeAuth", err)
 		return err
 	}
@@ -114,8 +115,8 @@ func (p Postgresql) GetNodeBasicData() ([]commonPB.NodeBasicData, error) {
 
 const createNodeBasicDataExec = `
 	INSERT INTO nodebasicdata 
-	(uuid, ticker, type, location, nodeversion) 
-	VALUES ($1, $2, $3, $4, $5)
+	(uuid, ticker, type, location, nodeversion, lastupdate) 
+	VALUES ($1, $2, $3, $4, $5, $6)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET ticker = excluded.ticker,
     	type = excluded.type,
@@ -125,7 +126,7 @@ const createNodeBasicDataExec = `
 
 func (p Postgresql) CreateNodeBasicData(data commonPB.NodeBasicData, uuid string) error {
 	if _, err := p.dbConn.Exec(createNodeBasicDataExec,
-		uuid, data.Ticker, data.Type, data.Location, data.NodeVersion); err != nil {
+		uuid, data.Ticker, data.Type, data.Location, data.NodeVersion, time.Now()); err != nil {
 		log.Println("CreateNodeBasicData", err)
 		return err
 	}
@@ -163,8 +164,8 @@ func (p Postgresql) GetServerBasicData() ([]commonPB.ServerBasicData, error) {
 
 const createServerBasicDataExec = `
 	INSERT INTO serverbasicdata 
-	(uuid, ipv4, ipv6, linuxname, linuxversion) 
-	VALUES ($1, $2, $3, $4, $5)
+	(uuid, ipv4, ipv6, linuxname, linuxversion, lastupdate) 
+	VALUES ($1, $2, $3, $4, $5, $6)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET ipv4 = excluded.ipv4, 
       	ipv6 = excluded.ipv6,
@@ -174,7 +175,7 @@ const createServerBasicDataExec = `
 
 func (p Postgresql) CreateServerBasicData(data commonPB.ServerBasicData, uuid string) error {
 	if _, err := p.dbConn.Exec(createServerBasicDataExec,
-		uuid, data.Ipv4, data.Ipv6, data.LinuxName, data.LinuxVersion); err != nil {
+		uuid, data.Ipv4, data.Ipv6, data.LinuxName, data.LinuxVersion, time.Now()); err != nil {
 		log.Println("CreateServerBasicData", err)
 		return err
 	}
@@ -211,15 +212,15 @@ func (p Postgresql) GetEpochData() ([]cardanoPb.Epoch, error) {
 
 const createEpochDataExec = `
 	INSERT INTO epochdata
-	(uuid, epochnumber)
-	VALUES ($1, $2)
+	(uuid, epochnumber, lastupdate)
+	VALUES ($1, $2, $3)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET epochnumber = excluded.epochnumber;
 `
 
 func (p Postgresql) CreateEpochData(data cardanoPb.Epoch, uuid string) error {
 	if _, err := p.dbConn.Exec(createEpochDataExec,
-		uuid, data.EpochNumber); err != nil {
+		uuid, data.EpochNumber, time.Now()); err != nil {
 		log.Println("CreateEpochData", err)
 		return err
 	}
@@ -257,8 +258,8 @@ func (p Postgresql) GetKesData() ([]cardanoPb.KESData, error) {
 
 const createKesDataExec = `
 	INSERT INTO kesdata
-	(uuid, kescurrent, kesremaining, kesexpdate) 
-	VALUES ($1, $2, $3, $4)
+	(uuid, kescurrent, kesremaining, kesexpdate, lastupdate) 
+	VALUES ($1, $2, $3, $4, $5)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET kescurrent = excluded.kescurrent,
   	    kesremaining = excluded.kesremaining,
@@ -267,7 +268,7 @@ const createKesDataExec = `
 
 func (p Postgresql) CreateKesData(data cardanoPb.KESData, uuid string) error {
 	if _, err := p.dbConn.Exec(createKesDataExec,
-		uuid, data.KesCurrent, data.KesRemaining, data.KesExpDate); err != nil {
+		uuid, data.KesCurrent, data.KesRemaining, data.KesExpDate, time.Now()); err != nil {
 		log.Println("CreateKesData", err)
 		return err
 	}
@@ -305,8 +306,8 @@ func (p Postgresql) GetBlocksData() ([]cardanoPb.Blocks, error) {
 
 const createBlocksDataExec = `
 	INSERT INTO blocksdata
-	(uuid, blockleader, blockadopted, blockinvalid)
-	VALUES ($1, $2, $3, $4)
+	(uuid, blockleader, blockadopted, blockinvalid, lastupdate)
+	VALUES ($1, $2, $3, $4, $5)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET blockleader = excluded.blockleader,
   	    blockadopted = excluded.blockadopted,
@@ -315,7 +316,7 @@ const createBlocksDataExec = `
 
 func (p Postgresql) CreateBlocksData(data cardanoPb.Blocks, uuid string) error {
 	if _, err := p.dbConn.Exec(createBlocksDataExec,
-		uuid, data.BlockLeader, data.BlockAdopted, data.BlockInvalid); err != nil {
+		uuid, data.BlockLeader, data.BlockAdopted, data.BlockInvalid, time.Now()); err != nil {
 		log.Println("CreateBlocksData", err)
 		return err
 	}
@@ -354,8 +355,8 @@ func (p Postgresql) GetUpdatesData() ([]commonPB.Updates, error) {
 
 const createUpdatesDataExec = `
 	INSERT INTO updatesdata
-	(uuid, informeractual, informeravailable, updateractual, updateravailable, packagesavailable)
-	VALUES ($1, $2, $3, $4, $5, $6)
+	(uuid, informeractual, informeravailable, updateractual, updateravailable, packagesavailable, lastupdate)
+	VALUES ($1, $2, $3, $4, $5, $6, $7)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET informeractual = excluded.informeractual,
   	    informeravailable = excluded.informeravailable,
@@ -367,7 +368,7 @@ const createUpdatesDataExec = `
 func (p Postgresql) CreateUpdatesData(data commonPB.Updates, uuid string) error {
 	if _, err := p.dbConn.Exec(createUpdatesDataExec,
 		uuid, data.InformerActual, data.InformerAvailable, data.UpdaterActual,
-		data.UpdaterAvailable, data.PackagesAvailable); err != nil {
+		data.UpdaterAvailable, data.PackagesAvailable, time.Now()); err != nil {
 		log.Println("CreateUpdatesData", err)
 		return err
 	}
@@ -405,8 +406,8 @@ func (p Postgresql) GetSecurityData() ([]commonPB.Security, error) {
 
 const createSecurityDataExec = `
 	INSERT INTO securitydata
-	(uuid, sshattackattempts, securitypackagesavailable)
-	VALUES ($1, $2, $3)
+	(uuid, sshattackattempts, securitypackagesavailable, lastupdate)
+	VALUES ($1, $2, $3, $4)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET sshattackattempts = excluded.sshattackattempts,
   	    securitypackagesavailable = excluded.securitypackagesavailable;
@@ -414,7 +415,7 @@ const createSecurityDataExec = `
 
 func (p Postgresql) CreateSecurityData(data commonPB.Security, uuid string) error {
 	if _, err := p.dbConn.Exec(createSecurityDataExec,
-		uuid, data.SshAttackAttempts, data.SecurityPackagesAvailable); err != nil {
+		uuid, data.SshAttackAttempts, data.SecurityPackagesAvailable, time.Now()); err != nil {
 		log.Println("CreateSecurityData", err)
 		return err
 	}
@@ -452,8 +453,8 @@ func (p Postgresql) GetStakeInfoData() ([]cardanoPb.StakeInfo, error) {
 
 const createStakeInfoDataExec = `
 	INSERT INTO stackdata
-	(uuid, livestake, activestake, pledge)
-	VALUES ($1, $2, $3, $4)
+	(uuid, livestake, activestake, pledge, lastupdate)
+	VALUES ($1, $2, $3, $4, $5)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET livestake = excluded.livestake,
   	    activestake = excluded.activestake,
@@ -462,7 +463,7 @@ const createStakeInfoDataExec = `
 
 func (p Postgresql) CreateStakeInfoData(data cardanoPb.StakeInfo, uuid string) error {
 	if _, err := p.dbConn.Exec(createStakeInfoDataExec,
-		uuid, data.LiveStake, data.ActiveStake, data.Pledge); err != nil {
+		uuid, data.LiveStake, data.ActiveStake, data.Pledge, time.Now()); err != nil {
 		log.Println("CreateStakeInfoData", err)
 		return err
 	}
@@ -502,8 +503,8 @@ func (p Postgresql) GetOnlineData() ([]commonPB.Online, error) {
 
 const createOnlineDataExec = `
 	INSERT INTO onlinedata
-	(uuid, sincestart, pings, nodeactive, nodeactivepings, serveractive)
-	VALUES ($1, $2, $3, $4, $5, $6)
+	(uuid, sincestart, pings, nodeactive, nodeactivepings, serveractive, lastupdate)
+	VALUES ($1, $2, $3, $4, $5, $6, $7)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET sincestart = excluded.sincestart,
   	    pings = excluded.pings,
@@ -515,7 +516,7 @@ const createOnlineDataExec = `
 func (p Postgresql) CreateOnlineData(data commonPB.Online, uuid string) error {
 	if _, err := p.dbConn.Exec(createOnlineDataExec,
 		uuid, data.SinceStart, data.Pings, data.NodeActive,
-		data.NodeActivePings, data.ServerActive); err != nil {
+		data.NodeActivePings, data.ServerActive, time.Now()); err != nil {
 		log.Println("CreateOnlineData", err)
 		return err
 	}
@@ -561,8 +562,8 @@ func (p Postgresql) GetMemoryStateData() ([]commonPB.MemoryState, error) {
 const createMemoryStateDataExec = `
 	INSERT INTO memorystatedata
 	(uuid, total, used, buffers, cached, free, available, active, inactive,
-	 swaptotal, swapused, swapcached, swapfree, memavailableenabled) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+	 swaptotal, swapused, swapcached, swapfree, memavailableenabled, lastupdate) 
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET total = excluded.total,
   	    used = excluded.used,
@@ -583,7 +584,8 @@ func (p Postgresql) CreateMemoryStateData(data commonPB.MemoryState, uuid string
 		uuid, data.Total, data.Used, data.Buffers,
 		data.Cached, data.Free, data.Available,
 		data.Active, data.Inactive, data.SwapTotal,
-		data.SwapUsed, data.SwapCached, data.SwapFree, data.MemAvailableEnabled); err != nil {
+		data.SwapUsed, data.SwapCached, data.SwapFree,
+		data.MemAvailableEnabled, time.Now()); err != nil {
 		log.Println("CreateMemoryStateData", err)
 		return err
 	}
@@ -621,8 +623,8 @@ func (p Postgresql) GetNodePerformanceData() ([]cardanoPb.NodePerformance, error
 
 const createNodePerformanceDataExec = `
 	INSERT INTO nodeperformancedata
-	(uuid, processedtx, peersin, peersout)
-	VALUES ($1, $2, $3, $4)
+	(uuid, processedtx, peersin, peersout, lastupdate)
+	VALUES ($1, $2, $3, $4, $5)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET processedtx = excluded.processedtx,
   	    peersin = excluded.peersin,
@@ -631,7 +633,7 @@ const createNodePerformanceDataExec = `
 
 func (p Postgresql) CreateNodePerformanceData(data cardanoPb.NodePerformance, uuid string) error {
 	if _, err := p.dbConn.Exec(createNodePerformanceDataExec,
-		uuid, data.ProcessedTx, data.PeersIn, data.PeersOut); err != nil {
+		uuid, data.ProcessedTx, data.PeersIn, data.PeersOut, time.Now()); err != nil {
 		log.Println("CreateNodePerformanceData", err)
 		return err
 	}
@@ -669,8 +671,8 @@ func (p Postgresql) GetCpuStateData() ([]commonPB.CPUState, error) {
 
 const createCpuStateDataExec = `
 	INSERT INTO cpustatedata
-	(uuid, cpuqty, averageworkload)
-	VALUES ($1, $2, $3)
+	(uuid, cpuqty, averageworkload, lastupdate)
+	VALUES ($1, $2, $3, $4)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET cpuqty = excluded.cpuqty,
   	    averageworkload = excluded.averageworkload;
@@ -678,7 +680,7 @@ const createCpuStateDataExec = `
 
 func (p Postgresql) CreateCpuStateData(data commonPB.CPUState, uuid string) error {
 	if _, err := p.dbConn.Exec(createCpuStateDataExec,
-		uuid, data.CpuQty, data.AverageWorkload); err != nil {
+		uuid, data.CpuQty, data.AverageWorkload, time.Now()); err != nil {
 		log.Println("CreateCpuStateData", err)
 		return err
 	}
@@ -716,8 +718,8 @@ func (p Postgresql) GetNodeStateData() ([]cardanoPb.NodeState, error) {
 
 const createNodeStateDataExec = `
 	INSERT INTO nodestatedata
-	(uuid, tipdiff, density) 
-	VALUES ($1, $2, $3)
+	(uuid, tipdiff, density, lastupdate) 
+	VALUES ($1, $2, $3, $4)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET tipdiff = excluded.tipdiff,
   	    density = excluded.density;
@@ -725,7 +727,7 @@ const createNodeStateDataExec = `
 
 func (p Postgresql) CreateNodeStateData(data cardanoPb.NodeState, uuid string) error {
 	if _, err := p.dbConn.Exec(createNodeStateDataExec,
-		uuid, data.TipDiff, data.Density); err != nil {
+		uuid, data.TipDiff, data.Density, time.Now()); err != nil {
 		log.Println("CreateNodeStateData", err)
 		return err
 	}
