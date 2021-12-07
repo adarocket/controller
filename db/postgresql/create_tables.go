@@ -138,7 +138,7 @@ const createChiaNodeFarmingTableExec = `
 	ExpectedTimeToWin varchar(40) not null default '')
 `
 
-func (p postgresql) CreateAllTables() error {
+func (p Postgresql) CreateAllTables() error {
 	if _, err := p.dbConn.Exec(createNodeAuthTableExec); err != nil {
 		log.Println("CreateNodeAuthTable", err)
 		return err
