@@ -6,7 +6,8 @@ const createNodeAuthTableExec = `
 	CREATE TABLE IF NOT EXISTS NodeAuth (
     Ticker varchar(40) not null default '',
     Uuid varchar(40) PRIMARY KEY,
-    Status varchar(40) not null default '')
+    Status varchar(40) not null default '',
+	LastUpdate timestamp without time zone not null)
 `
 
 const createNodeBasicDataTableExec = `
@@ -15,7 +16,8 @@ const createNodeBasicDataTableExec = `
     Ticker varchar(40) not null default '',
     Type varchar(40) not null default '',
     Location varchar(40) not null default '',
-    NodeVersion varchar(40) not null default '')
+    NodeVersion varchar(40) not null default '',
+	LastUpdate timestamp without time zone not null)
 `
 
 const createServerBasicDataTableExec = `
@@ -24,13 +26,15 @@ const createServerBasicDataTableExec = `
     Ipv4 varchar(40) not null default '',
     Ipv6 varchar(40) not null default '',
     LinuxName varchar(40) not null default '',
-    LinuxVersion varchar(40) not null default '')
+    LinuxVersion varchar(40) not null default '',
+	LastUpdate timestamp without time zone not null)
 `
 
 const createEpochDataTableExec = `
 	CREATE TABLE IF NOT EXISTS EpochData (
     Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
-	EpochNumber bigint not null default 0)
+	EpochNumber bigint not null default 0,
+	LastUpdate timestamp without time zone not null)
 `
 
 const createKesDataTableExec = `
@@ -38,7 +42,8 @@ const createKesDataTableExec = `
     Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
     KesCurrent bigint not null default 0,
     KesRemaining bigint not null default 0,
-    KesExpDate varchar(40) not null default '')
+    KesExpDate varchar(40) not null default '',
+	LastUpdate timestamp without time zone not null)
 `
 
 const createBlocksDataTableExec = `
@@ -46,7 +51,8 @@ const createBlocksDataTableExec = `
 	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
     BlockLeader bigint not null default 0,
     BlockAdopted bigint not null default 0,
-    BlockInvalid bigint not null default 0)
+    BlockInvalid bigint not null default 0,
+	LastUpdate timestamp without time zone not null)
 `
 
 const createUpdatesDataTableExec = `
@@ -56,14 +62,16 @@ const createUpdatesDataTableExec = `
     InformerAvailable varchar(40) not null default '',
     UpdaterActual varchar(40) not null default '',
 	UpdaterAvailable varchar(40) not null default '',
-	PackagesAvailable bigint not null default 0)
+	PackagesAvailable bigint not null default 0,
+	LastUpdate timestamp without time zone not null)
 `
 
 const createSecurityDataTableExec = `
 	CREATE TABLE IF NOT EXISTS SecurityData (
 	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
     SshAttackAttempts bigint not null default 0,
-    SecurityPackagesAvailable bigint not null default 0)
+    SecurityPackagesAvailable bigint not null default 0,
+	LastUpdate timestamp without time zone not null)
 `
 
 const createStakeDataTableExec = `
@@ -71,7 +79,8 @@ const createStakeDataTableExec = `
 	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
     LiveStake bigint not null default 0,
     ActiveStake bigint not null default 0,
-    Pledge bigint not null default 0)
+    Pledge bigint not null default 0,
+	LastUpdate timestamp without time zone not null)
 `
 
 const createOnlineDataTableExec = `
@@ -81,7 +90,8 @@ const createOnlineDataTableExec = `
     Pings bigint not null default 0,
     NodeActive bool not null default false,
 	NodeActivePings bigint not null default 0,
-	ServerActive bool not null default false)
+	ServerActive bool not null default false,
+	LastUpdate timestamp without time zone not null)
 `
 
 const createMemoryStateDataTableExec = `
@@ -99,21 +109,24 @@ const createMemoryStateDataTableExec = `
 	SwapUsed bigint not null default 0,
     SwapCached bigint not null default 0,
     SwapFree bigint not null default 0,
-	MemAvailableEnabled bool not null default false)
+	MemAvailableEnabled bool not null default false,
+	LastUpdate timestamp without time zone not null)
 `
 
 const createCpuStateTableExec = `
 	CREATE TABLE IF NOT EXISTS CpuStateData (
 	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
     CpuQty bigint not null default 0,
-    AverageWorkload float8 not null default 0)
+    AverageWorkload float8 not null default 0,
+	LastUpdate timestamp without time zone not null)
 `
 
 const createNodeStateTableExec = `
 	CREATE TABLE IF NOT EXISTS NodeStateData (
 	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
     TipDiff bigint not null default 0,
-    Density float8 not null default 0)
+    Density float8 not null default 0,
+	LastUpdate timestamp without time zone not null)
 `
 
 const createNodePerformanceTableExec = `
@@ -121,7 +134,8 @@ const createNodePerformanceTableExec = `
 	Uuid varchar(40) PRIMARY KEY REFERENCES NodeAuth(uuid), 
     ProcessedTx bigint not null default 0,
     PeersIn bigint not null default 0,
-    PeersOut bigint not null default 0)
+    PeersOut bigint not null default 0,
+	LastUpdate timestamp without time zone not null)
 `
 
 const createChiaNodeFarmingTableExec = `
@@ -135,7 +149,8 @@ const createChiaNodeFarmingTableExec = `
 	PlotCount bigint not null default 0,
 	TotalSizeOfPlots bigint not null default 0,
 	EstimatedNetworkSpace bigint not null default 0,
-	ExpectedTimeToWin varchar(40) not null default '')
+	ExpectedTimeToWin varchar(40) not null default '',
+	LastUpdate timestamp without time zone not null)
 `
 
 func (p Postgresql) CreateAllTables() error {
