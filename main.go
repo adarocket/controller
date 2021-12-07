@@ -1,8 +1,6 @@
 package main
 
 import (
-	"adarocket/controller/db/postgresql"
-	"adarocket/controller/db/save"
 	"log"
 	"net"
 	"time"
@@ -55,9 +53,9 @@ func main() {
 
 	interceptor := auth.NewAuthInterceptor(jwtManager, accessiblePermissions())
 
-	postgresql.InitDatabase(loadedConfig.DBConfig)
+	/*postgresql.InitDatabase(loadedConfig.DBConfig)
 	postgresql.Postg.CreateAllTables()
-	save.AutoSave(informServer)
+	save.AutoSave(informServer)*/
 
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),
