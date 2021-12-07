@@ -1,35 +1,31 @@
 package postgresql
 
 import (
-	"adarocket/controller/config"
 	"database/sql"
 	"fmt"
-	"log"
+	"github.com/adarocket/controller/config"
 )
 
-// PostgreSQL ...
-var Postg postgresql
-
-// InitDatabase ...
-func InitDatabase(config config.DBConfig) {
+func InitDatabase(config config.Config) (Postgresql, error) {
 	/*connStr := fmt.Sprintf(`user=%s password=%s dbname=%s sslmode=%s`,
 	"postgres", "postgresql", "postgres", "disable")*/
 	connStr := fmt.Sprintf(`user=%s password=%s dbname=%s sslmode=%s`,
-		config.User, config.Password, config.Dbname, config.Sslmode)
-	fmt.Println(connStr)
+		config.DBConfig.User, config.DBConfig.Password,
+		config.DBConfig.Dbname, config.DBConfig.Sslmode)
+
 	// connStr := "user = postgres password=postgresql dbname=crypto sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatal(err)
+		return Postgresql{}, err
 	}
 
 	if err = db.Ping(); err != nil {
-		log.Fatal(err)
+		return Postgresql{}, err
 	}
 
-	Postg.dbConn = db
+	return Postgresql{dbConn: db}, nil
 }
 
-type postgresql struct {
+type Postgresql struct {
 	dbConn *sql.DB
 }
