@@ -1,6 +1,9 @@
 package structs
 
-import pb "github.com/adarocket/proto/proto"
+import (
+	cardanoPb "github.com/adarocket/proto/proto-gen/cardano"
+	commonPB "github.com/adarocket/proto/proto-gen/common"
+)
 
 type Database interface {
 	CreateAllTables() error
@@ -18,82 +21,76 @@ type Database interface {
 	NodePerformance
 	CpuState
 	NodeState
-	ChiaNodeFarming
 }
 
 type NodeAuthData interface {
-	GetNodeAuthData() ([]pb.NodeAuthData, error)
-	CreateNodeAuthData(data pb.NodeAuthData) error
-	UpdateNodeAuthData(data pb.NodeAuthData) error
-	DeleteNodeAuthData(data pb.NodeAuthData) error
+	GetNodeAuthData() ([]commonPB.NodeAuthData, error)
+	CreateNodeAuthData(data commonPB.NodeAuthData) error
+	UpdateNodeAuthData(data commonPB.NodeAuthData) error
+	DeleteNodeAuthData(data commonPB.NodeAuthData) error
 }
 
 type NodeBasicData interface {
-	GetNodeBasicData() ([]pb.NodeBasicData, error)
-	CreateNodeBasicData(data pb.NodeBasicData, uuid string) error
+	GetNodeBasicData() ([]commonPB.NodeBasicData, error)
+	CreateNodeBasicData(data commonPB.NodeBasicData, uuid string) error
 }
 
 type ServerBasicData interface {
-	GetServerBasicData() ([]pb.ServerBasicData, error)
-	CreateServerBasicData(data pb.ServerBasicData, uuid string) error
+	GetServerBasicData() ([]commonPB.ServerBasicData, error)
+	CreateServerBasicData(data commonPB.ServerBasicData, uuid string) error
 }
 
 type Epoch interface {
-	GetEpochData() ([]pb.Epoch, error)
-	CreateEpochData(data pb.Epoch, uuid string) error
+	GetEpochData() ([]cardanoPb.Epoch, error)
+	CreateEpochData(data cardanoPb.Epoch, uuid string) error
 }
 
 type KesData interface {
-	GetKesData() ([]pb.KESData, error)
-	CreateKesData(data pb.KESData, uuid string) error
+	GetKesData() ([]cardanoPb.KESData, error)
+	CreateKesData(data cardanoPb.KESData, uuid string) error
 }
 
 type Blocks interface {
-	GetBlocksData() ([]pb.Blocks, error)
-	CreateBlocksData(data pb.Blocks, uuid string) error
+	GetBlocksData() ([]cardanoPb.Blocks, error)
+	CreateBlocksData(data cardanoPb.Blocks, uuid string) error
 }
 
 type Updates interface {
-	GetUpdatesData() ([]pb.Updates, error)
-	CreateUpdatesData(data pb.Updates, uuid string) error
+	GetUpdatesData() ([]commonPB.Updates, error)
+	CreateUpdatesData(data commonPB.Updates, uuid string) error
 }
 
 type Security interface {
-	GetSecurityData() ([]pb.Security, error)
-	CreateSecurityData(data pb.Security, uuid string) error
+	GetSecurityData() ([]commonPB.Security, error)
+	CreateSecurityData(data commonPB.Security, uuid string) error
 }
 
 type StakeInfo interface {
-	GetStakeInfoData() ([]pb.StakeInfo, error)
-	CreateStakeInfoData(data pb.StakeInfo, uuid string) error
+	GetStakeInfoData() ([]cardanoPb.StakeInfo, error)
+	CreateStakeInfoData(data cardanoPb.StakeInfo, uuid string) error
 }
 
 type Online interface {
-	GetOnlineData() ([]pb.Online, error)
-	CreateOnlineData(data pb.Online, uuid string) error
+	GetOnlineData() ([]commonPB.Online, error)
+	CreateOnlineData(data commonPB.Online, uuid string) error
 }
 
 type MemoryState interface {
-	GetMemoryStateData() ([]pb.MemoryState, error)
-	CreateMemoryStateData(data pb.MemoryState, uuid string) error
+	GetMemoryStateData() ([]commonPB.MemoryState, error)
+	CreateMemoryStateData(data commonPB.MemoryState, uuid string) error
 }
 
 type CpuState interface {
-	GetCpuStateData() ([]pb.CPUState, error)
-	CreateCpuStateData(data pb.CPUState, uuid string) error
+	GetCpuStateData() ([]commonPB.CPUState, error)
+	CreateCpuStateData(data commonPB.CPUState, uuid string) error
 }
 
 type NodeState interface {
-	GetNodeStateData() ([]pb.NodeState, error)
-	CreateNodeStateData(data pb.NodeState, uuid string) error
+	GetNodeStateData() ([]cardanoPb.NodeState, error)
+	CreateNodeStateData(data cardanoPb.NodeState, uuid string) error
 }
 
 type NodePerformance interface {
-	GetNodePerformanceData() ([]pb.NodePerformance, error)
-	CreateNodePerformanceData(data pb.NodePerformance, uuid string) error
-}
-
-type ChiaNodeFarming interface {
-	GetChiaNodeFarmingData() ([]pb.ChiaNodeFarming, error)
-	CreateChiaNodeFarmingData(data pb.ChiaNodeFarming, uuid string) error
+	GetNodePerformanceData() ([]cardanoPb.NodePerformance, error)
+	CreateNodePerformanceData(data cardanoPb.NodePerformance, uuid string) error
 }

@@ -1,116 +1,115 @@
 package save
 
 import (
-	"adarocket/controller/db/structs"
-	"adarocket/controller/informer"
+	"github.com/adarocket/controller/db/structs"
+	"github.com/adarocket/controller/informer"
+	"github.com/adarocket/proto/proto-gen/cardano"
 	"log"
 	"time"
 )
 
-const timeout = 10
+const timeout = 5
 
-var db structs.Database
-
-func InitDb(newDb structs.Database) {
-	db = newDb
-}
-
-func AutoSave(server *informer.InformServer) {
+func AutoSave(server *informer.CardanoInformServer, db structs.Database) {
 	go func() {
 		for _ = range time.Tick(time.Minute * timeout) {
-			saveToDb(server)
+			saveToDb(server, db)
 		}
 	}()
 }
 
-func saveToDb(server *informer.InformServer) {
+func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 	for _, value := range server.NodeStatistics {
-		if value.NodeInfo == nil {
+		if value.NodeAuthData == nil {
 			continue
 		}
-		if value.NodeInfo.NodeAuthData != nil {
-			if err := db.CreateNodeAuthData(*value.NodeInfo.NodeAuthData); err != nil {
+
+		if value.NodeAuthData != nil {
+			if err := db.CreateNodeAuthData(*value.NodeAuthData); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic == nil {
+
+		var stats *cardano.Statistic
+		if stats = value.GetStatistic(); stats == nil {
 			continue
 		}
-		if value.NodeInfo.Statistic.ServerBasicData != nil {
-			if err := db.CreateServerBasicData(*value.NodeInfo.Statistic.ServerBasicData,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+
+		if stats.ServerBasicData != nil {
+			if err := db.CreateServerBasicData(*stats.ServerBasicData,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.NodeState != nil {
-			if err := db.CreateNodeStateData(*value.NodeInfo.Statistic.NodeState,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.NodeState != nil {
+			if err := db.CreateNodeStateData(*stats.NodeState,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.NodePerformance != nil {
-			if err := db.CreateNodePerformanceData(*value.NodeInfo.Statistic.NodePerformance,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.NodePerformance != nil {
+			if err := db.CreateNodePerformanceData(*stats.NodePerformance,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.MemoryState != nil {
-			if err := db.CreateMemoryStateData(*value.NodeInfo.Statistic.MemoryState,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.MemoryState != nil {
+			if err := db.CreateMemoryStateData(*stats.MemoryState,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.Online != nil {
-			if err := db.CreateOnlineData(*value.NodeInfo.Statistic.Online,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.Online != nil {
+			if err := db.CreateOnlineData(*stats.Online,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.StakeInfo != nil {
-			if err := db.CreateStakeInfoData(*value.NodeInfo.Statistic.StakeInfo,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.StakeInfo != nil {
+			if err := db.CreateStakeInfoData(*stats.StakeInfo,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.Security != nil {
-			if err := db.CreateSecurityData(*value.NodeInfo.Statistic.Security,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.Security != nil {
+			if err := db.CreateSecurityData(*stats.Security,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.Updates != nil {
-			if err := db.CreateUpdatesData(*value.NodeInfo.Statistic.Updates,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.Updates != nil {
+			if err := db.CreateUpdatesData(*stats.Updates,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.Blocks != nil {
-			if err := db.CreateBlocksData(*value.NodeInfo.Statistic.Blocks,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.Blocks != nil {
+			if err := db.CreateBlocksData(*stats.Blocks,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.Epoch != nil {
-			if err := db.CreateEpochData(*value.NodeInfo.Statistic.Epoch,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.Epoch != nil {
+			if err := db.CreateEpochData(*stats.Epoch,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.NodeBasicData != nil {
-			if err := db.CreateNodeBasicData(*value.NodeInfo.Statistic.NodeBasicData,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.NodeBasicData != nil {
+			if err := db.CreateNodeBasicData(*stats.NodeBasicData,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.CpuState != nil {
-			if err := db.CreateCpuStateData(*value.NodeInfo.Statistic.CpuState,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.CpuState != nil {
+			if err := db.CreateCpuStateData(*stats.CpuState,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
-		if value.NodeInfo.Statistic.KesData != nil {
-			if err := db.CreateKesData(*value.NodeInfo.Statistic.KesData,
-				value.NodeInfo.NodeAuthData.Uuid); err != nil {
+		if stats.KesData != nil {
+			if err := db.CreateKesData(*stats.KesData,
+				value.NodeAuthData.Uuid); err != nil {
 				log.Println(err)
 			}
 		}
