@@ -24,13 +24,17 @@ func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 
 		var stats *cardano.Statistic
 		if stats = value.GetStatistic(); stats == nil {
+			log.Println("GetStatistic() returned nil")
 			continue
 		}
 
 		dataNodes := structs.Node{
-			NodeAuthData:  *value.NodeAuthData,
-			NodeBasicData: *stats.NodeBasicData,
+			NodeAuthData: *value.NodeAuthData,
 		}
+		if stats.NodeBasicData != nil {
+			dataNodes.NodeBasicData = *stats.NodeBasicData
+		}
+
 		if err := db.CreateNodeData(dataNodes); err != nil {
 			log.Println(err)
 			log.Println("lost data", dataNodes)
@@ -40,15 +44,26 @@ func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 			continue
 		}
 
-		dataServer := structs.ServerData{
-			Uuid:            value.NodeAuthData.Uuid,
-			Updates:         *stats.Updates,
-			CPUState:        *stats.CpuState,
-			Online:          *stats.Online,
-			MemoryState:     *stats.MemoryState,
-			Security:        *stats.Security,
-			ServerBasicData: *stats.ServerBasicData,
+		dataServer := structs.ServerData{Uuid: value.NodeAuthData.Uuid}
+		if stats.Updates != nil {
+			dataServer.Updates = *stats.Updates
 		}
+		if stats.CpuState != nil {
+			dataServer.CPUState = *stats.CpuState
+		}
+		if stats.Online != nil {
+			dataServer.Online = *stats.Online
+		}
+		if stats.MemoryState != nil {
+			dataServer.MemoryState = *stats.MemoryState
+		}
+		if stats.Security != nil {
+			dataServer.Security = *stats.Security
+		}
+		if stats.ServerBasicData != nil {
+			dataServer.ServerBasicData = *stats.ServerBasicData
+		}
+
 		if err := db.CreateNodeServerData(dataServer); err != nil {
 			log.Println(err)
 			log.Println("lost data", dataServer)
@@ -57,15 +72,26 @@ func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 			}
 		}
 
-		dataCardano := structs.CardanoData{
-			Uuid:            value.NodeAuthData.Uuid,
-			Epoch:           *stats.Epoch,
-			KESData:         *stats.KesData,
-			Blocks:          *stats.Blocks,
-			StakeInfo:       *stats.StakeInfo,
-			NodePerformance: *stats.NodePerformance,
-			NodeState:       *stats.NodeState,
+		dataCardano := structs.CardanoData{Uuid: value.NodeAuthData.Uuid}
+		if stats.Epoch != nil {
+			dataCardano.Epoch = *stats.Epoch
 		}
+		if stats.KesData != nil {
+			dataCardano.KESData = *stats.KesData
+		}
+		if stats.Blocks != nil {
+			dataCardano.Blocks = *stats.Blocks
+		}
+		if stats.StakeInfo != nil {
+			dataCardano.StakeInfo = *stats.StakeInfo
+		}
+		if stats.NodePerformance != nil {
+			dataCardano.NodePerformance = *stats.NodePerformance
+		}
+		if stats.NodeState != nil {
+			dataCardano.NodeState = *stats.NodeState
+		}
+
 		if err := db.CreateCardanoData(dataCardano); err != nil {
 			log.Println(err)
 			log.Println("lost data", dataCardano)
