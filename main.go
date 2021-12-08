@@ -1,12 +1,12 @@
 package main
 
 import (
-	auth2 "github.com/adarocket/controller/repository/auth"
+	auth "github.com/adarocket/controller/repository/auth"
 	"github.com/adarocket/controller/repository/config"
 	"github.com/adarocket/controller/repository/db/postgresql"
-	informer2 "github.com/adarocket/controller/repository/informer"
+	informer "github.com/adarocket/controller/repository/informer"
 	"github.com/adarocket/controller/repository/save"
-	user2 "github.com/adarocket/controller/repository/user"
+	user "github.com/adarocket/controller/repository/user"
 	"log"
 	"net"
 	"time"
@@ -33,7 +33,7 @@ func main() {
 		panic(err)
 	}
 
-	userStore := user2.NewInMemoryUserStore()
+	userStore := user.NewInMemoryUserStore()
 	if err := seedUsers(userStore); err != nil {
 		log.Fatal("cannot seed users: ", err)
 	}
@@ -45,14 +45,14 @@ func main() {
 
 	// ----------------------------------------------------------------------
 
-	jwtManager := auth2.NewJWTManager(secretKey, tokenDuration)
-	authServer := auth2.NewAuthServer(userStore, jwtManager)
+	jwtManager := auth.NewJWTManager(secretKey, tokenDuration)
+	authServer := auth.NewAuthServer(userStore, jwtManager)
 
-	commonServer := informer2.NewCommonInformServer(jwtManager, loadedConfig)
-	cardanoServer := informer2.NewCardanoInformServer(jwtManager, loadedConfig)
-	chiaServer := informer2.NewChiaInformServer(jwtManager, loadedConfig)
+	commonServer := informer.NewCommonInformServer(jwtManager, loadedConfig)
+	cardanoServer := informer.NewCardanoInformServer(jwtManager, loadedConfig)
+	chiaServer := informer.NewChiaInformServer(jwtManager, loadedConfig)
 
-	interceptor := auth2.NewAuthInterceptor(jwtManager, accessiblePermissions())
+	interceptor := auth.NewAuthInterceptor(jwtManager, accessiblePermissions())
 
 	db, err := postgresql.InitDatabase(loadedConfig)
 	if err != nil {
@@ -81,15 +81,15 @@ func main() {
 
 // ----------------------------------------------------------------
 
-func createUser(userStore user2.UserStore, username, password string, permissions []string) error {
-	user, err := user2.NewUser(username, password, permissions)
+func createUser(userStore user.UserStore, username, password string, permissions []string) error {
+	user, err := user.NewUser(username, password, permissions)
 	if err != nil {
 		return err
 	}
 	return userStore.Save(user)
 }
 
-func seedUsers(userStore user2.UserStore) error {
+func seedUsers(userStore user.UserStore) error {
 	if err := createUser(userStore, "admin1", "secret", []string{"basic", "server_technical", "node_technical", "node_financial"}); err != nil {
 		return err
 	}
