@@ -24,94 +24,49 @@ func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 			continue
 		}
 
-		if value.NodeAuthData != nil {
-			if err := db.CreateNodeAuthData(*value.NodeAuthData); err != nil {
-				log.Println(err)
-			}
-		}
-
 		var stats *cardano.Statistic
 		if stats = value.GetStatistic(); stats == nil {
 			continue
 		}
 
-		if stats.ServerBasicData != nil {
-			if err := db.CreateServerBasicData(*stats.ServerBasicData,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
+		dataNodes := structs.Nodes{
+			NodeAuthData:  *value.NodeAuthData,
+			NodeBasicData: *stats.NodeBasicData,
 		}
-		if stats.NodeState != nil {
-			if err := db.CreateNodeStateData(*stats.NodeState,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
+		if err := db.CreateNodeData(dataNodes); err != nil {
+			log.Println(err)
+			log.Println("lost data", dataNodes)
+			continue
 		}
-		if stats.NodePerformance != nil {
-			if err := db.CreateNodePerformanceData(*stats.NodePerformance,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
+
+		dataServer := structs.ServerData{
+			Uuid:            value.NodeAuthData.Uuid,
+			Updates:         *stats.Updates,
+			CPUState:        *stats.CpuState,
+			Online:          *stats.Online,
+			MemoryState:     *stats.MemoryState,
+			Security:        *stats.Security,
+			ServerBasicData: *stats.ServerBasicData,
 		}
-		if stats.MemoryState != nil {
-			if err := db.CreateMemoryStateData(*stats.MemoryState,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
+		if err := db.CreateNodeServerData(dataServer); err != nil {
+			log.Println(err)
+			log.Println("lost data", dataServer)
 		}
-		if stats.Online != nil {
-			if err := db.CreateOnlineData(*stats.Online,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
+
+		dataCardano := structs.CardanoData{
+			Uuid:            value.NodeAuthData.Uuid,
+			Epoch:           *stats.Epoch,
+			KESData:         *stats.KesData,
+			Blocks:          *stats.Blocks,
+			StakeInfo:       *stats.StakeInfo,
+			NodePerformance: *stats.NodePerformance,
+			NodeState:       *stats.NodeState,
 		}
-		if stats.StakeInfo != nil {
-			if err := db.CreateStakeInfoData(*stats.StakeInfo,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
+		if err := db.CreateCardanoData(dataCardano); err != nil {
+			log.Println(err)
+			log.Println("lost data", dataCardano)
 		}
-		if stats.Security != nil {
-			if err := db.CreateSecurityData(*stats.Security,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
-		}
-		if stats.Updates != nil {
-			if err := db.CreateUpdatesData(*stats.Updates,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
-		}
-		if stats.Blocks != nil {
-			if err := db.CreateBlocksData(*stats.Blocks,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
-		}
-		if stats.Epoch != nil {
-			if err := db.CreateEpochData(*stats.Epoch,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
-		}
-		if stats.NodeBasicData != nil {
-			if err := db.CreateNodeBasicData(*stats.NodeBasicData,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
-		}
-		if stats.CpuState != nil {
-			if err := db.CreateCpuStateData(*stats.CpuState,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
-		}
-		if stats.KesData != nil {
-			if err := db.CreateKesData(*stats.KesData,
-				value.NodeAuthData.Uuid); err != nil {
-				log.Println(err)
-			}
-		}
+
+		server.NodeStatistics = map[string]*cardano.SaveStatisticRequest{}
 	}
 }
