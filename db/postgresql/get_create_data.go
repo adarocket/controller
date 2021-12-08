@@ -40,8 +40,6 @@ const createNodeAuthExec = `
 	INSERT INTO NodeAuth 
 	(Ticker, Uuid, Status, LastUpdate) 
 	VALUES ($1, $2, $3, $4)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET status = excluded.status;
 `
 
 func (p Postgresql) CreateNodeAuthData(data commonPB.NodeAuthData) error {
@@ -117,11 +115,6 @@ const createNodeBasicDataExec = `
 	INSERT INTO nodebasicdata 
 	(uuid, ticker, type, location, nodeversion, lastupdate) 
 	VALUES ($1, $2, $3, $4, $5, $6)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET ticker = excluded.ticker,
-    	type = excluded.type,
-  		location = excluded.location,
-  	    nodeversion = excluded.nodeversion;
 `
 
 func (p Postgresql) CreateNodeBasicData(data commonPB.NodeBasicData, uuid string) error {
@@ -166,11 +159,6 @@ const createServerBasicDataExec = `
 	INSERT INTO serverbasicdata 
 	(uuid, ipv4, ipv6, linuxname, linuxversion, lastupdate) 
 	VALUES ($1, $2, $3, $4, $5, $6)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET ipv4 = excluded.ipv4, 
-      	ipv6 = excluded.ipv6,
-  	    linuxname = excluded.linuxname,
-  	    linuxversion = excluded.linuxversion;
 `
 
 func (p Postgresql) CreateServerBasicData(data commonPB.ServerBasicData, uuid string) error {
@@ -214,8 +202,6 @@ const createEpochDataExec = `
 	INSERT INTO epochdata
 	(uuid, epochnumber, lastupdate)
 	VALUES ($1, $2, $3)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET epochnumber = excluded.epochnumber;
 `
 
 func (p Postgresql) CreateEpochData(data cardanoPb.Epoch, uuid string) error {
@@ -259,11 +245,7 @@ func (p Postgresql) GetKesData() ([]cardanoPb.KESData, error) {
 const createKesDataExec = `
 	INSERT INTO kesdata
 	(uuid, kescurrent, kesremaining, kesexpdate, lastupdate) 
-	VALUES ($1, $2, $3, $4, $5)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET kescurrent = excluded.kescurrent,
-  	    kesremaining = excluded.kesremaining,
-  	    kesexpdate = excluded.kesexpdate;  	    
+	VALUES ($1, $2, $3, $4, $5)   
 `
 
 func (p Postgresql) CreateKesData(data cardanoPb.KESData, uuid string) error {
@@ -307,11 +289,7 @@ func (p Postgresql) GetBlocksData() ([]cardanoPb.Blocks, error) {
 const createBlocksDataExec = `
 	INSERT INTO blocksdata
 	(uuid, blockleader, blockadopted, blockinvalid, lastupdate)
-	VALUES ($1, $2, $3, $4, $5)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET blockleader = excluded.blockleader,
-  	    blockadopted = excluded.blockadopted,
-  	    blockinvalid = excluded.blockinvalid;  
+	VALUES ($1, $2, $3, $4, $5) 
 `
 
 func (p Postgresql) CreateBlocksData(data cardanoPb.Blocks, uuid string) error {
@@ -357,12 +335,6 @@ const createUpdatesDataExec = `
 	INSERT INTO updatesdata
 	(uuid, informeractual, informeravailable, updateractual, updateravailable, packagesavailable, lastupdate)
 	VALUES ($1, $2, $3, $4, $5, $6, $7)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET informeractual = excluded.informeractual,
-  	    informeravailable = excluded.informeravailable,
-  	    updateractual = excluded.updateractual, 
-  	    updateravailable = excluded.updateravailable,
-  	    packagesavailable = excluded.packagesavailable;
 `
 
 func (p Postgresql) CreateUpdatesData(data commonPB.Updates, uuid string) error {
@@ -408,9 +380,6 @@ const createSecurityDataExec = `
 	INSERT INTO securitydata
 	(uuid, sshattackattempts, securitypackagesavailable, lastupdate)
 	VALUES ($1, $2, $3, $4)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET sshattackattempts = excluded.sshattackattempts,
-  	    securitypackagesavailable = excluded.securitypackagesavailable;
 `
 
 func (p Postgresql) CreateSecurityData(data commonPB.Security, uuid string) error {
@@ -455,10 +424,6 @@ const createStakeInfoDataExec = `
 	INSERT INTO stackdata
 	(uuid, livestake, activestake, pledge, lastupdate)
 	VALUES ($1, $2, $3, $4, $5)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET livestake = excluded.livestake,
-  	    activestake = excluded.activestake,
-  	    pledge = excluded.pledge;
 `
 
 func (p Postgresql) CreateStakeInfoData(data cardanoPb.StakeInfo, uuid string) error {
@@ -505,12 +470,7 @@ const createOnlineDataExec = `
 	INSERT INTO onlinedata
 	(uuid, sincestart, pings, nodeactive, nodeactivepings, serveractive, lastupdate)
 	VALUES ($1, $2, $3, $4, $5, $6, $7)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET sincestart = excluded.sincestart,
-  	    pings = excluded.pings,
-  	    nodeactive = excluded.nodeactive,
-  	    nodeactivepings = excluded.nodeactivepings,
-  	    serveractive = excluded.serveractive;
+
 `
 
 func (p Postgresql) CreateOnlineData(data commonPB.Online, uuid string) error {
@@ -564,19 +524,6 @@ const createMemoryStateDataExec = `
 	(uuid, total, used, buffers, cached, free, available, active, inactive,
 	 swaptotal, swapused, swapcached, swapfree, memavailableenabled, lastupdate) 
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET total = excluded.total,
-  	    used = excluded.used,
-  	    buffers = excluded.buffers,
-  	    cached = excluded.cached,
-  	    free = excluded.free,
-  	    available = excluded.available,
-  	    active = excluded.inactive,
-  	    swaptotal = excluded.swaptotal,
-  	    swapused = excluded.swapused,
-  	    swapcached = excluded.swapcached,
-  	    swapfree = excluded.swapfree,
-  	    memavailableenabled = excluded.memavailableenabled;
 `
 
 func (p Postgresql) CreateMemoryStateData(data commonPB.MemoryState, uuid string) error {
@@ -625,10 +572,6 @@ const createNodePerformanceDataExec = `
 	INSERT INTO nodeperformancedata
 	(uuid, processedtx, peersin, peersout, lastupdate)
 	VALUES ($1, $2, $3, $4, $5)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET processedtx = excluded.processedtx,
-  	    peersin = excluded.peersin,
-  	    peersout = excluded.peersout;
 `
 
 func (p Postgresql) CreateNodePerformanceData(data cardanoPb.NodePerformance, uuid string) error {
@@ -673,9 +616,6 @@ const createCpuStateDataExec = `
 	INSERT INTO cpustatedata
 	(uuid, cpuqty, averageworkload, lastupdate)
 	VALUES ($1, $2, $3, $4)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET cpuqty = excluded.cpuqty,
-  	    averageworkload = excluded.averageworkload;
 `
 
 func (p Postgresql) CreateCpuStateData(data commonPB.CPUState, uuid string) error {
@@ -720,9 +660,6 @@ const createNodeStateDataExec = `
 	INSERT INTO nodestatedata
 	(uuid, tipdiff, density, lastupdate) 
 	VALUES ($1, $2, $3, $4)
-	ON CONFLICT (uuid) DO UPDATE 
-  	SET tipdiff = excluded.tipdiff,
-  	    density = excluded.density;
 `
 
 func (p Postgresql) CreateNodeStateData(data cardanoPb.NodeState, uuid string) error {
