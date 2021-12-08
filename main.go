@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/adarocket/controller/db/postgresql"
 	auth "github.com/adarocket/controller/repository/auth"
 	"github.com/adarocket/controller/repository/config"
-	"github.com/adarocket/controller/repository/db/postgresql"
 	informer "github.com/adarocket/controller/repository/informer"
 	"github.com/adarocket/controller/repository/save"
 	user "github.com/adarocket/controller/repository/user"
