@@ -3,7 +3,9 @@ package main
 import (
 	auth2 "github.com/adarocket/controller/repository/auth"
 	"github.com/adarocket/controller/repository/config"
+	"github.com/adarocket/controller/repository/db/postgresql"
 	informer2 "github.com/adarocket/controller/repository/informer"
+	"github.com/adarocket/controller/repository/save"
 	user2 "github.com/adarocket/controller/repository/user"
 	"log"
 	"net"
@@ -52,7 +54,7 @@ func main() {
 
 	interceptor := auth2.NewAuthInterceptor(jwtManager, accessiblePermissions())
 
-	/*db, err := postgresql.InitDatabase(loadedConfig)
+	db, err := postgresql.InitDatabase(loadedConfig)
 	if err != nil {
 		log.Println(err)
 		return
@@ -61,7 +63,7 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	go save.AutoSave(cardanoServer, db)*/
+	go save.AutoSave(cardanoServer, db)
 
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),
