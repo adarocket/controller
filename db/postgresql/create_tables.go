@@ -10,6 +10,7 @@ const createNodesTableExec = `
 	Type 			varchar(40) not null default '',
     Location 		varchar(40) not null default '',
     Node_Version 	varchar(40) not null default '',
+	Blockchain		varchar(40) not null default '',
 	Last_Update 	timestamp 	without time zone not null)
 `
 
