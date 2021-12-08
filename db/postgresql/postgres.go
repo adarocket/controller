@@ -30,3 +30,7 @@ func InitDatabase(config config.Config) (Postgresql, error) {
 type Postgresql struct {
 	dbConn *sql.DB
 }
+
+func (p Postgresql) Ping() error {
+	return p.dbConn.Ping()
+}

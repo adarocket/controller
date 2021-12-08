@@ -10,6 +10,7 @@ type Database interface {
 	NodeInterface
 	ServerDataInterface
 	CaradanoDataInterface
+	Ping() error
 }
 
 type Nodes struct {
