@@ -1,8 +1,8 @@
 package save
 
 import (
-	"github.com/adarocket/controller/db/structs"
-	"github.com/adarocket/controller/informer"
+	"github.com/adarocket/controller/repository/db/structs"
+	"github.com/adarocket/controller/repository/informer"
 	"github.com/adarocket/proto/proto-gen/cardano"
 	"log"
 	"time"

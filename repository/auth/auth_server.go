@@ -2,13 +2,12 @@ package auth
 
 import (
 	"context"
+	"github.com/adarocket/controller/repository/user"
 
 	pb "github.com/adarocket/proto/proto-gen/auth"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/adarocket/controller/user"
 )
 
 // AuthServer -

@@ -1,7 +1,7 @@
 package postgresql
 
 import (
-	"github.com/adarocket/controller/db/structs"
+	"github.com/adarocket/controller/repository/db/structs"
 	"log"
 	"time"
 )

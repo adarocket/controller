@@ -2,9 +2,9 @@ package informer
 
 import (
 	"context"
+	"github.com/adarocket/controller/repository/auth"
+	"github.com/adarocket/controller/repository/config"
 
-	"github.com/adarocket/controller/auth"
-	"github.com/adarocket/controller/config"
 	pb "github.com/adarocket/proto/proto-gen/common"
 )
 

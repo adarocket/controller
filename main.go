@@ -1,16 +1,13 @@
 package main
 
 import (
-	"github.com/adarocket/controller/db/postgresql"
-	"github.com/adarocket/controller/db/save"
+	auth2 "github.com/adarocket/controller/repository/auth"
+	"github.com/adarocket/controller/repository/config"
+	informer2 "github.com/adarocket/controller/repository/informer"
+	user2 "github.com/adarocket/controller/repository/user"
 	"log"
 	"net"
 	"time"
-
-	"github.com/adarocket/controller/auth"
-	"github.com/adarocket/controller/config"
-	"github.com/adarocket/controller/informer"
-	"github.com/adarocket/controller/user"
 
 	authPB "github.com/adarocket/proto/proto-gen/auth"
 	cardanoPB "github.com/adarocket/proto/proto-gen/cardano"
@@ -34,7 +31,7 @@ func main() {
 		panic(err)
 	}
 
-	userStore := user.NewInMemoryUserStore()
+	userStore := user2.NewInMemoryUserStore()
 	if err := seedUsers(userStore); err != nil {
 		log.Fatal("cannot seed users: ", err)
 	}
@@ -46,16 +43,16 @@ func main() {
 
 	// ----------------------------------------------------------------------
 
-	jwtManager := auth.NewJWTManager(secretKey, tokenDuration)
-	authServer := auth.NewAuthServer(userStore, jwtManager)
+	jwtManager := auth2.NewJWTManager(secretKey, tokenDuration)
+	authServer := auth2.NewAuthServer(userStore, jwtManager)
 
-	commonServer := informer.NewCommonInformServer(jwtManager, loadedConfig)
-	cardanoServer := informer.NewCardanoInformServer(jwtManager, loadedConfig)
-	chiaServer := informer.NewChiaInformServer(jwtManager, loadedConfig)
+	commonServer := informer2.NewCommonInformServer(jwtManager, loadedConfig)
+	cardanoServer := informer2.NewCardanoInformServer(jwtManager, loadedConfig)
+	chiaServer := informer2.NewChiaInformServer(jwtManager, loadedConfig)
 
-	interceptor := auth.NewAuthInterceptor(jwtManager, accessiblePermissions())
+	interceptor := auth2.NewAuthInterceptor(jwtManager, accessiblePermissions())
 
-	db, err := postgresql.InitDatabase(loadedConfig)
+	/*db, err := postgresql.InitDatabase(loadedConfig)
 	if err != nil {
 		log.Println(err)
 		return
@@ -64,7 +61,7 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	go save.AutoSave(cardanoServer, db)
+	go save.AutoSave(cardanoServer, db)*/
 
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),
@@ -82,15 +79,15 @@ func main() {
 
 // ----------------------------------------------------------------
 
-func createUser(userStore user.UserStore, username, password string, permissions []string) error {
-	user, err := user.NewUser(username, password, permissions)
+func createUser(userStore user2.UserStore, username, password string, permissions []string) error {
+	user, err := user2.NewUser(username, password, permissions)
 	if err != nil {
 		return err
 	}
 	return userStore.Save(user)
 }
 
-func seedUsers(userStore user.UserStore) error {
+func seedUsers(userStore user2.UserStore) error {
 	if err := createUser(userStore, "admin1", "secret", []string{"basic", "server_technical", "node_technical", "node_financial"}); err != nil {
 		return err
 	}

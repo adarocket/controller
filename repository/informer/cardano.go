@@ -2,10 +2,9 @@ package informer
 
 import (
 	"context"
-
-	"github.com/adarocket/controller/auth"
-	"github.com/adarocket/controller/config"
-	"github.com/adarocket/controller/helpers"
+	"github.com/adarocket/controller/repository/auth"
+	"github.com/adarocket/controller/repository/config"
+	"github.com/adarocket/controller/repository/helpers"
 
 	pb "github.com/adarocket/proto/proto-gen/cardano"
 	commonPB "github.com/adarocket/proto/proto-gen/common"

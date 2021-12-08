@@ -2,9 +2,8 @@ package auth
 
 import (
 	"fmt"
+	"github.com/adarocket/controller/repository/user"
 	"time"
-
-	"github.com/adarocket/controller/user"
 
 	"github.com/dgrijalva/jwt-go"
 )
