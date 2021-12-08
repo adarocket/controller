@@ -29,7 +29,7 @@ func (p Postgresql) GetNodeAuthData() ([]commonPB.NodeAuthData, error) {
 			log.Println("NodesAuth: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		nodesAuthData = append(nodesAuthData, nodeAuthData)
 	}
 
@@ -104,7 +104,7 @@ func (p Postgresql) GetNodeBasicData() ([]commonPB.NodeBasicData, error) {
 			log.Println("NodesAuth: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		nodesBasicData = append(nodesBasicData, nodeBasicData)
 	}
 
@@ -148,7 +148,7 @@ func (p Postgresql) GetServerBasicData() ([]commonPB.ServerBasicData, error) {
 			log.Println("serverBasicData: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		serverBasicDates = append(serverBasicDates, serverBasicData)
 	}
 
@@ -191,7 +191,7 @@ func (p Postgresql) GetEpochData() ([]cardanoPb.Epoch, error) {
 			log.Println("epochData: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		epochDates = append(epochDates, epochData)
 	}
 
@@ -235,7 +235,7 @@ func (p Postgresql) GetKesData() ([]cardanoPb.KESData, error) {
 			log.Println("kesData: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		kesDates = append(kesDates, kesData)
 	}
 
@@ -279,7 +279,7 @@ func (p Postgresql) GetBlocksData() ([]cardanoPb.Blocks, error) {
 			log.Println("blockData: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		blockDates = append(blockDates, blockData)
 	}
 
@@ -324,7 +324,7 @@ func (p Postgresql) GetUpdatesData() ([]commonPB.Updates, error) {
 			log.Println("updateData: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		updatesDates = append(updatesDates, updateData)
 	}
 
@@ -369,7 +369,7 @@ func (p Postgresql) GetSecurityData() ([]commonPB.Security, error) {
 			log.Println("securityData: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		securityDates = append(securityDates, securityData)
 	}
 
@@ -413,7 +413,7 @@ func (p Postgresql) GetStakeInfoData() ([]cardanoPb.StakeInfo, error) {
 			log.Println("stakeInfoData: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		stakeInfoDates = append(stakeInfoDates, stakeInfoData)
 	}
 
@@ -459,7 +459,7 @@ func (p Postgresql) GetOnlineData() ([]commonPB.Online, error) {
 			log.Println("onlineData: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		onlineDates = append(onlineDates, onlineData)
 	}
 
@@ -512,7 +512,7 @@ func (p Postgresql) GetMemoryStateData() ([]commonPB.MemoryState, error) {
 			log.Println("memoryStateData: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		memoryStateDates = append(memoryStateDates, memoryStateData)
 	}
 
@@ -561,7 +561,7 @@ func (p Postgresql) GetNodePerformanceData() ([]cardanoPb.NodePerformance, error
 			log.Println("nodePerformanceData: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		nodePerformanceDates = append(nodePerformanceDates, nodePerformanceData)
 	}
 
@@ -605,7 +605,7 @@ func (p Postgresql) GetCpuStateData() ([]commonPB.CPUState, error) {
 			log.Println("cpuStateDates: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		cpuStateDates = append(cpuStateDates, cpuStateData)
 	}
 
@@ -649,7 +649,7 @@ func (p Postgresql) GetNodeStateData() ([]cardanoPb.NodeState, error) {
 			log.Println("nodeStateDates: parse err", err)
 			continue
 		}
-		// можно ли так делать?
+
 		nodeStateDates = append(nodeStateDates, nodeStateData)
 	}
 
