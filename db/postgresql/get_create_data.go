@@ -1,671 +1,185 @@
 package postgresql
 
 import (
+	"github.com/adarocket/controller/db/structs"
 	"log"
 	"time"
-
-	cardanoPb "github.com/adarocket/proto/proto-gen/cardano"
-	commonPB "github.com/adarocket/proto/proto-gen/common"
 )
 
-const getNodeAuthQuery = `
-	SELECT Ticker, Uuid, Status 
-	FROM NodeAuth
+const getNodesDataQuery = `
+	SELECT ticker, uuid, status, type, 
+	       location, nodeversion, lastupdate 
+	FROM Nodes
 `
 
-func (p Postgresql) GetNodeAuthData() ([]commonPB.NodeAuthData, error) {
-	rows, err := p.dbConn.Query(getNodeAuthQuery)
+func (p Postgresql) GetNodesData() ([]structs.Nodes, error) {
+	rows, err := p.dbConn.Query(getNodesDataQuery)
 	if err != nil {
 		log.Fatal("GetNodesAuthData", err)
-		return []commonPB.NodeAuthData{}, err
+		return []structs.Nodes{}, err
 	}
 	defer rows.Close()
 
-	nodesAuthData := make([]commonPB.NodeAuthData, 0, 10)
+	nodesData := make([]structs.Nodes, 0, 10)
 	for rows.Next() {
-		nodeAuthData := commonPB.NodeAuthData{}
-		if err := rows.Scan(&nodeAuthData.Ticker, &nodeAuthData.Uuid,
-			&nodeAuthData.Status); err != nil {
+		data := structs.Nodes{}
+		if err := rows.Scan(&data.NodeAuthData.Ticker, &data.Uuid, &data.Status,
+			&data.Type, &data.Location, &data.NodeVersion, time.Now()); err != nil {
 			log.Println("NodesAuth: parse err", err)
 			continue
 		}
 
-		nodesAuthData = append(nodesAuthData, nodeAuthData)
+		nodesData = append(nodesData, data)
 	}
 
-	return nodesAuthData, nil
+	return nodesData, nil
 }
 
-const createNodeAuthExec = `
-	INSERT INTO NodeAuth 
-	(Ticker, Uuid, Status, LastUpdate) 
-	VALUES ($1, $2, $3, $4)
+const createNodeExec = `
+	INSERT INTO Nodes
+	(TICKER, UUID, STATUS, TYPE, LOCATION, NODEVERSION, LASTUPDATE) 
+	VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
-func (p Postgresql) CreateNodeAuthData(data commonPB.NodeAuthData) error {
-	if _, err := p.dbConn.Exec(createNodeAuthExec,
-		data.Ticker, data.Uuid, data.Status, time.Now()); err != nil {
-		log.Println("CreateNodeAuth", err)
+func (p Postgresql) CreateNodeData(data structs.Nodes) error {
+	if _, err := p.dbConn.Exec(createNodeExec,
+		data.NodeAuthData.Ticker, data.Uuid, data.Status,
+		data.Type, data.Location, data.NodeVersion, time.Now()); err != nil {
+		log.Println("CreateNode", err)
 		return err
 	}
 
 	return nil
 }
 
-const updateNodeAuthData = `
-	UPDATE nodeauth
-	SET ticker = $1, status = $2
-	WHERE uuid = $3
+const getNodeServerDataQuery = `
+	SELECT uuid, ipv4, ipv6, linuxname, linuxversion, informeractual, informeravailable,
+	       updateractual, updateravailable, packagesavailable, sshattackattempts,
+	       securitypackagesavailable, sincestart, pings, nodeactive, nodeactivepings,
+	       serveractive, total, used, buffers, cached, free, available, active, inactive,
+	       swaptotal, swapused, swapcached, swapfree, memavailableenabled,
+	       cpuqty, averageworkload
+	FROM serverdata
 `
 
-func (p Postgresql) UpdateNodeAuthData(data commonPB.NodeAuthData) error {
-	_, err := p.dbConn.Exec(updateNodeAuthData,
-		data.Ticker, data.Status)
+func (p Postgresql) GetNodeServerData() ([]structs.ServerData, error) {
+	rows, err := p.dbConn.Query(getNodeServerDataQuery)
 	if err != nil {
-		log.Println("UpdateToken", err)
-		return err
-	}
-
-	return nil
-}
-
-const deleteNodeAuthExec = `
-	DELETE FROM nodeauth
-	WHERE uuid = $1
-`
-
-func (p Postgresql) DeleteNodeAuthData(data commonPB.NodeAuthData) error {
-	if _, err := p.dbConn.Exec(deleteNodeAuthExec, data.Ticker); err != nil {
-		log.Println("DeleteNodeAuth", err)
-		return err
-	}
-
-	return nil
-}
-
-const getNodeBasicDataQuery = `
-	SELECT ticker, type, location, nodeversion 
-	FROM NodeBasicData
-`
-
-func (p Postgresql) GetNodeBasicData() ([]commonPB.NodeBasicData, error) {
-	rows, err := p.dbConn.Query(getNodeBasicDataQuery)
-	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
-		return []commonPB.NodeBasicData{}, err
+		log.Fatal("GetNodesServerData", err)
+		return []structs.ServerData{}, err
 	}
 	defer rows.Close()
 
-	nodesBasicData := make([]commonPB.NodeBasicData, 0, 10)
+	serverData := make([]structs.ServerData, 0, 10)
 	for rows.Next() {
-		nodeBasicData := commonPB.NodeBasicData{}
-		if err := rows.Scan(&nodeBasicData.Ticker, &nodeBasicData.Type,
-			&nodeBasicData.Location, &nodeBasicData.NodeVersion); err != nil {
+		data := structs.ServerData{}
+		if err := rows.Scan(&data.Uuid, &data.Ipv4, data.Ipv6, &data.LinuxName, &data.LinuxVersion,
+			&data.InformerActual, &data.InformerAvailable, &data.UpdaterActual,
+			&data.UpdaterAvailable, &data.PackagesAvailable, &data.SshAttackAttempts,
+			&data.SecurityPackagesAvailable, &data.SinceStart, &data.Pings,
+			&data.NodeActive, &data.NodeActivePings, &data.ServerActive,
+			&data.Total, &data.Used, &data.Buffers, &data.Cached, &data.Free,
+			&data.Available, &data.Active, &data.Inactive, &data.SwapTotal, &data.SwapUsed,
+			&data.SwapCached, &data.SwapFree, &data.MemAvailableEnabled, &data.CpuQty,
+			&data.AverageWorkload); err != nil {
 			log.Println("NodesAuth: parse err", err)
 			continue
 		}
 
-		nodesBasicData = append(nodesBasicData, nodeBasicData)
+		serverData = append(serverData, data)
 	}
 
-	return nodesBasicData, nil
+	return serverData, nil
 }
 
-const createNodeBasicDataExec = `
-	INSERT INTO nodebasicdata 
-	(uuid, ticker, type, location, nodeversion, lastupdate) 
-	VALUES ($1, $2, $3, $4, $5, $6)
+const createNodeServerDataExec = `
+	INSERT INTO serverdata 
+	(uuid, ipv4, ipv6, linuxname, linuxversion, informeractual,
+	 informeravailable, updateractual, updateravailable, 
+	 packagesavailable, sshattackattempts, securitypackagesavailable,
+	 sincestart, pings, nodeactive, nodeactivepings, serveractive,
+	 total, used, buffers, cached, free, available, active, 
+	 inactive, swaptotal, swapused, swapcached, swapfree,
+	 memavailableenabled, cpuqty, averageworkload, lastupdate) 
+	VALUES ($1, $2, $3, $4, $5, $6,
+	        $7, $8, $9, $10, $11, $12,
+	        $13, $14, $15, $16, $17, $18,
+	        $19, $20, $21, $22, $23, $24,
+	        $25, $26, $27, $28, $29, $30,
+	        $31, $32, $33)
 `
 
-func (p Postgresql) CreateNodeBasicData(data commonPB.NodeBasicData, uuid string) error {
-	if _, err := p.dbConn.Exec(createNodeBasicDataExec,
-		uuid, data.Ticker, data.Type, data.Location, data.NodeVersion, time.Now()); err != nil {
-		log.Println("CreateNodeBasicData", err)
+func (p Postgresql) CreateNodeServerData(data structs.ServerData) error {
+	if _, err := p.dbConn.Exec(createNodeServerDataExec,
+		data.Uuid, data.Ipv4, data.Ipv6, data.LinuxName, data.LinuxVersion,
+		data.InformerActual, data.InformerAvailable, data.UpdaterActual,
+		data.UpdaterAvailable, data.PackagesAvailable, data.SshAttackAttempts,
+		data.SecurityPackagesAvailable, data.SinceStart, data.Pings,
+		data.NodeActive, data.NodeActivePings, data.ServerActive,
+		data.Total, data.Used, data.Buffers, data.Cached, data.Free,
+		data.Available, data.Active, data.Inactive, data.SwapTotal, data.SwapUsed,
+		data.SwapCached, data.SwapFree, data.MemAvailableEnabled, data.CpuQty,
+		data.AverageWorkload, time.Now()); err != nil {
+		log.Println("CreateNodeServerData", err)
 		return err
 	}
 
 	return nil
 }
 
-const getServerBasicData = `
-	SELECT ipv4, ipv6, linuxname, linuxversion
-	FROM serverbasicdata
+const getCardanoData = `
+	SELECT uuid, epochnumber, kescurrent, kesremaining,
+	       kesexpdate, blockleader, blockadopted, blockinvalid,
+	       livestake, activestake, pledge, tipdiff, density, processedtx,
+	       peersin, peersout, lastupdate
+	FROM cardanodata
 `
 
-func (p Postgresql) GetServerBasicData() ([]commonPB.ServerBasicData, error) {
-	rows, err := p.dbConn.Query(getServerBasicData)
+func (p Postgresql) GetCardanoData() ([]structs.CardanoData, error) {
+	rows, err := p.dbConn.Query(getCardanoData)
 	if err != nil {
 		log.Fatal("GetServerBasicData", err)
-		return []commonPB.ServerBasicData{}, err
+		return []structs.CardanoData{}, err
 	}
 	defer rows.Close()
 
-	serverBasicDates := make([]commonPB.ServerBasicData, 0, 10)
+	cardanoData := make([]structs.CardanoData, 0, 10)
 	for rows.Next() {
-		serverBasicData := commonPB.ServerBasicData{}
-		if err := rows.Scan(&serverBasicData.Ipv4, &serverBasicData.Ipv6,
-			&serverBasicData.LinuxName, &serverBasicData.LinuxVersion); err != nil {
+		data := structs.CardanoData{}
+		if err := rows.Scan(&data.Uuid, &data.EpochNumber, &data.KesCurrent, &data.KesRemaining,
+			&data.KesExpDate, &data.BlockLeader, &data.BlockAdopted,
+			&data.BlockInvalid, &data.LiveStake, &data.ActiveStake,
+			&data.Pledge, &data.TipDiff, &data.Density,
+			&data.ProcessedTx, &data.PeersIn, &data.PeersOut); err != nil {
 			log.Println("serverBasicData: parse err", err)
 			continue
 		}
 
-		serverBasicDates = append(serverBasicDates, serverBasicData)
+		cardanoData = append(cardanoData, data)
 	}
 
-	return serverBasicDates, nil
+	return cardanoData, nil
 }
 
-const createServerBasicDataExec = `
-	INSERT INTO serverbasicdata 
-	(uuid, ipv4, ipv6, linuxname, linuxversion, lastupdate) 
-	VALUES ($1, $2, $3, $4, $5, $6)
+const createCardanoDataExec = `
+	INSERT INTO cardanodata
+	(uuid, epochnumber, kescurrent, kesremaining,
+	 kesexpdate, blockleader, blockadopted, blockinvalid,
+	 livestake, activestake, pledge, tipdiff, density,
+	 processedtx, peersin, peersout, lastupdate) 
+	VALUES ($1, $2, $3, $4, $5, $6,
+	        $7, $8, $9, $10, $11, $12,
+	        $13, $14, $15, $16, $17)
 `
 
-func (p Postgresql) CreateServerBasicData(data commonPB.ServerBasicData, uuid string) error {
-	if _, err := p.dbConn.Exec(createServerBasicDataExec,
-		uuid, data.Ipv4, data.Ipv6, data.LinuxName, data.LinuxVersion, time.Now()); err != nil {
+func (p Postgresql) CreateCardanoData(data structs.CardanoData) error {
+	if _, err := p.dbConn.Exec(createCardanoDataExec,
+		data.Uuid, data.EpochNumber, data.KesCurrent, data.KesRemaining,
+		data.KesExpDate, data.BlockLeader, data.BlockAdopted,
+		data.BlockInvalid, data.LiveStake, data.ActiveStake,
+		data.Pledge, data.TipDiff, data.Density,
+		data.ProcessedTx, data.PeersIn, data.PeersOut, time.Now()); err != nil {
 		log.Println("CreateServerBasicData", err)
-		return err
-	}
-
-	return nil
-}
-
-const getEpochDataQuery = `
-	SELECT epochnumber
-	FROM epochdata
-`
-
-func (p Postgresql) GetEpochData() ([]cardanoPb.Epoch, error) {
-	rows, err := p.dbConn.Query(getEpochDataQuery)
-	if err != nil {
-		log.Fatal("GetEpochData", err)
-		return []cardanoPb.Epoch{}, err
-	}
-	defer rows.Close()
-
-	epochDates := make([]cardanoPb.Epoch, 0, 10)
-	for rows.Next() {
-		epochData := cardanoPb.Epoch{}
-		if err := rows.Scan(&epochData.EpochNumber); err != nil {
-			log.Println("epochData: parse err", err)
-			continue
-		}
-
-		epochDates = append(epochDates, epochData)
-	}
-
-	return epochDates, nil
-}
-
-const createEpochDataExec = `
-	INSERT INTO epochdata
-	(uuid, epochnumber, lastupdate)
-	VALUES ($1, $2, $3)
-`
-
-func (p Postgresql) CreateEpochData(data cardanoPb.Epoch, uuid string) error {
-	if _, err := p.dbConn.Exec(createEpochDataExec,
-		uuid, data.EpochNumber, time.Now()); err != nil {
-		log.Println("CreateEpochData", err)
-		return err
-	}
-
-	return nil
-}
-
-const getKesDataQuery = `
-	SELECT epochnumber
-	FROM epochdata
-`
-
-func (p Postgresql) GetKesData() ([]cardanoPb.KESData, error) {
-	rows, err := p.dbConn.Query(getKesDataQuery)
-	if err != nil {
-		log.Fatal("GetKesData", err)
-		return []cardanoPb.KESData{}, err
-	}
-	defer rows.Close()
-
-	kesDates := make([]cardanoPb.KESData, 0, 10)
-	for rows.Next() {
-		kesData := cardanoPb.KESData{}
-		if err := rows.Scan(&kesData.KesCurrent,
-			&kesData.KesRemaining, &kesData.KesExpDate); err != nil {
-			log.Println("kesData: parse err", err)
-			continue
-		}
-
-		kesDates = append(kesDates, kesData)
-	}
-
-	return kesDates, nil
-}
-
-const createKesDataExec = `
-	INSERT INTO kesdata
-	(uuid, kescurrent, kesremaining, kesexpdate, lastupdate) 
-	VALUES ($1, $2, $3, $4, $5)   
-`
-
-func (p Postgresql) CreateKesData(data cardanoPb.KESData, uuid string) error {
-	if _, err := p.dbConn.Exec(createKesDataExec,
-		uuid, data.KesCurrent, data.KesRemaining, data.KesExpDate, time.Now()); err != nil {
-		log.Println("CreateKesData", err)
-		return err
-	}
-
-	return nil
-}
-
-const getBlocksDataQuery = `
-	SELECT blockleader, blockadopted, blockinvalid
-	FROM blocksdata
-`
-
-func (p Postgresql) GetBlocksData() ([]cardanoPb.Blocks, error) {
-	rows, err := p.dbConn.Query(getBlocksDataQuery)
-	if err != nil {
-		log.Fatal("GetBlocksData", err)
-		return []cardanoPb.Blocks{}, err
-	}
-	defer rows.Close()
-
-	blockDates := make([]cardanoPb.Blocks, 0, 10)
-	for rows.Next() {
-		blockData := cardanoPb.Blocks{}
-		if err := rows.Scan(&blockData.BlockLeader,
-			&blockData.BlockAdopted, &blockData.BlockInvalid); err != nil {
-			log.Println("blockData: parse err", err)
-			continue
-		}
-
-		blockDates = append(blockDates, blockData)
-	}
-
-	return blockDates, nil
-}
-
-const createBlocksDataExec = `
-	INSERT INTO blocksdata
-	(uuid, blockleader, blockadopted, blockinvalid, lastupdate)
-	VALUES ($1, $2, $3, $4, $5) 
-`
-
-func (p Postgresql) CreateBlocksData(data cardanoPb.Blocks, uuid string) error {
-	if _, err := p.dbConn.Exec(createBlocksDataExec,
-		uuid, data.BlockLeader, data.BlockAdopted, data.BlockInvalid, time.Now()); err != nil {
-		log.Println("CreateBlocksData", err)
-		return err
-	}
-
-	return nil
-}
-
-const getUpdatesDataQuery = `
-	SELECT INFORMERACTUAL, INFORMERAVAILABLE, UPDATERACTUAL, UPDATERAVAILABLE, PACKAGESAVAILABLE
-	FROM updatesdata
-`
-
-func (p Postgresql) GetUpdatesData() ([]commonPB.Updates, error) {
-	rows, err := p.dbConn.Query(getUpdatesDataQuery)
-	if err != nil {
-		log.Fatal("GetUpdatesData", err)
-		return []commonPB.Updates{}, err
-	}
-	defer rows.Close()
-
-	updatesDates := make([]commonPB.Updates, 0, 10)
-	for rows.Next() {
-		updateData := commonPB.Updates{}
-		if err := rows.Scan(&updateData.InformerActual,
-			&updateData.InformerAvailable, &updateData.UpdaterActual,
-			&updateData.UpdaterAvailable, &updateData.PackagesAvailable); err != nil {
-			log.Println("updateData: parse err", err)
-			continue
-		}
-
-		updatesDates = append(updatesDates, updateData)
-	}
-
-	return updatesDates, nil
-}
-
-const createUpdatesDataExec = `
-	INSERT INTO updatesdata
-	(uuid, informeractual, informeravailable, updateractual, updateravailable, packagesavailable, lastupdate)
-	VALUES ($1, $2, $3, $4, $5, $6, $7)
-`
-
-func (p Postgresql) CreateUpdatesData(data commonPB.Updates, uuid string) error {
-	if _, err := p.dbConn.Exec(createUpdatesDataExec,
-		uuid, data.InformerActual, data.InformerAvailable, data.UpdaterActual,
-		data.UpdaterAvailable, data.PackagesAvailable, time.Now()); err != nil {
-		log.Println("CreateUpdatesData", err)
-		return err
-	}
-
-	return nil
-}
-
-const getSecurityDataQuery = `
-	SELECT sshattackattempts, securitypackagesavailable
-	FROM securitydata
-`
-
-func (p Postgresql) GetSecurityData() ([]commonPB.Security, error) {
-	rows, err := p.dbConn.Query(getSecurityDataQuery)
-	if err != nil {
-		log.Fatal("GetSecurityData", err)
-		return []commonPB.Security{}, err
-	}
-	defer rows.Close()
-
-	securityDates := make([]commonPB.Security, 0, 10)
-	for rows.Next() {
-		securityData := commonPB.Security{}
-		if err := rows.Scan(&securityData.SshAttackAttempts,
-			&securityData.SecurityPackagesAvailable); err != nil {
-			log.Println("securityData: parse err", err)
-			continue
-		}
-
-		securityDates = append(securityDates, securityData)
-	}
-
-	return securityDates, nil
-}
-
-const createSecurityDataExec = `
-	INSERT INTO securitydata
-	(uuid, sshattackattempts, securitypackagesavailable, lastupdate)
-	VALUES ($1, $2, $3, $4)
-`
-
-func (p Postgresql) CreateSecurityData(data commonPB.Security, uuid string) error {
-	if _, err := p.dbConn.Exec(createSecurityDataExec,
-		uuid, data.SshAttackAttempts, data.SecurityPackagesAvailable, time.Now()); err != nil {
-		log.Println("CreateSecurityData", err)
-		return err
-	}
-
-	return nil
-}
-
-const getStakeInfoDataQuery = `
-	SELECT livestake, activestake, pledge
-	FROM stackdata
-`
-
-func (p Postgresql) GetStakeInfoData() ([]cardanoPb.StakeInfo, error) {
-	rows, err := p.dbConn.Query(getStakeInfoDataQuery)
-	if err != nil {
-		log.Fatal("GetStakeInfoData", err)
-		return []cardanoPb.StakeInfo{}, err
-	}
-	defer rows.Close()
-
-	stakeInfoDates := make([]cardanoPb.StakeInfo, 0, 10)
-	for rows.Next() {
-		stakeInfoData := cardanoPb.StakeInfo{}
-		if err := rows.Scan(&stakeInfoData.LiveStake,
-			&stakeInfoData.ActiveStake, &stakeInfoData.Pledge); err != nil {
-			log.Println("stakeInfoData: parse err", err)
-			continue
-		}
-
-		stakeInfoDates = append(stakeInfoDates, stakeInfoData)
-	}
-
-	return stakeInfoDates, nil
-}
-
-const createStakeInfoDataExec = `
-	INSERT INTO stackdata
-	(uuid, livestake, activestake, pledge, lastupdate)
-	VALUES ($1, $2, $3, $4, $5)
-`
-
-func (p Postgresql) CreateStakeInfoData(data cardanoPb.StakeInfo, uuid string) error {
-	if _, err := p.dbConn.Exec(createStakeInfoDataExec,
-		uuid, data.LiveStake, data.ActiveStake, data.Pledge, time.Now()); err != nil {
-		log.Println("CreateStakeInfoData", err)
-		return err
-	}
-
-	return nil
-}
-
-const getOnlineDataQuery = `
-	SELECT sincestart, pings, nodeactive, nodeactivepings, serveractive
-	FROM onlinedata
-`
-
-func (p Postgresql) GetOnlineData() ([]commonPB.Online, error) {
-	rows, err := p.dbConn.Query(getOnlineDataQuery)
-	if err != nil {
-		log.Fatal("GetOnlineData", err)
-		return []commonPB.Online{}, err
-	}
-	defer rows.Close()
-
-	onlineDates := make([]commonPB.Online, 0, 10)
-	for rows.Next() {
-		onlineData := commonPB.Online{}
-		if err := rows.Scan(&onlineData.SinceStart,
-			&onlineData.Pings, &onlineData.NodeActive,
-			&onlineData.NodeActive, &onlineData.NodeActivePings,
-			&onlineData.ServerActive); err != nil {
-			log.Println("onlineData: parse err", err)
-			continue
-		}
-
-		onlineDates = append(onlineDates, onlineData)
-	}
-
-	return onlineDates, nil
-}
-
-const createOnlineDataExec = `
-	INSERT INTO onlinedata
-	(uuid, sincestart, pings, nodeactive, nodeactivepings, serveractive, lastupdate)
-	VALUES ($1, $2, $3, $4, $5, $6, $7)
-
-`
-
-func (p Postgresql) CreateOnlineData(data commonPB.Online, uuid string) error {
-	if _, err := p.dbConn.Exec(createOnlineDataExec,
-		uuid, data.SinceStart, data.Pings, data.NodeActive,
-		data.NodeActivePings, data.ServerActive, time.Now()); err != nil {
-		log.Println("CreateOnlineData", err)
-		return err
-	}
-
-	return nil
-}
-
-const getMemoryStateDataQuery = `
-	SELECT total, used, buffers, cached, free, available, active, inactive, 
-	       swaptotal, swapused, swapcached, swapfree, memavailableenabled
-	FROM memorystatedata
-`
-
-func (p Postgresql) GetMemoryStateData() ([]commonPB.MemoryState, error) {
-	rows, err := p.dbConn.Query(getMemoryStateDataQuery)
-	if err != nil {
-		log.Fatal("GetMemoryStateData", err)
-		return []commonPB.MemoryState{}, err
-	}
-	defer rows.Close()
-
-	memoryStateDates := make([]commonPB.MemoryState, 0, 10)
-	for rows.Next() {
-		memoryStateData := commonPB.MemoryState{}
-		if err := rows.Scan(&memoryStateData.Total,
-			&memoryStateData.Used, &memoryStateData.Buffers,
-			&memoryStateData.Cached, &memoryStateData.Cached,
-			&memoryStateData.Free, &memoryStateData.Available,
-			&memoryStateData.Available, &memoryStateData.Active,
-			&memoryStateData.Inactive, &memoryStateData.SwapTotal,
-			&memoryStateData.SwapUsed, &memoryStateData.SwapCached,
-			&memoryStateData.SwapFree, &memoryStateData.MemAvailableEnabled); err != nil {
-			log.Println("memoryStateData: parse err", err)
-			continue
-		}
-
-		memoryStateDates = append(memoryStateDates, memoryStateData)
-	}
-
-	return memoryStateDates, nil
-}
-
-const createMemoryStateDataExec = `
-	INSERT INTO memorystatedata
-	(uuid, total, used, buffers, cached, free, available, active, inactive,
-	 swaptotal, swapused, swapcached, swapfree, memavailableenabled, lastupdate) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
-`
-
-func (p Postgresql) CreateMemoryStateData(data commonPB.MemoryState, uuid string) error {
-	if _, err := p.dbConn.Exec(createMemoryStateDataExec,
-		uuid, data.Total, data.Used, data.Buffers,
-		data.Cached, data.Free, data.Available,
-		data.Active, data.Inactive, data.SwapTotal,
-		data.SwapUsed, data.SwapCached, data.SwapFree,
-		data.MemAvailableEnabled, time.Now()); err != nil {
-		log.Println("CreateMemoryStateData", err)
-		return err
-	}
-
-	return nil
-}
-
-const getNodePerformanceDataQuery = `
-	SELECT processedtx, peersin, peersout
-	FROM nodeperformancedata
-`
-
-func (p Postgresql) GetNodePerformanceData() ([]cardanoPb.NodePerformance, error) {
-	rows, err := p.dbConn.Query(getNodePerformanceDataQuery)
-	if err != nil {
-		log.Fatal("GetNodePerformanceData", err)
-		return []cardanoPb.NodePerformance{}, err
-	}
-	defer rows.Close()
-
-	nodePerformanceDates := make([]cardanoPb.NodePerformance, 0, 10)
-	for rows.Next() {
-		nodePerformanceData := cardanoPb.NodePerformance{}
-		if err := rows.Scan(&nodePerformanceData.ProcessedTx,
-			&nodePerformanceData.PeersIn, &nodePerformanceData.PeersOut); err != nil {
-			log.Println("nodePerformanceData: parse err", err)
-			continue
-		}
-
-		nodePerformanceDates = append(nodePerformanceDates, nodePerformanceData)
-	}
-
-	return nodePerformanceDates, nil
-}
-
-const createNodePerformanceDataExec = `
-	INSERT INTO nodeperformancedata
-	(uuid, processedtx, peersin, peersout, lastupdate)
-	VALUES ($1, $2, $3, $4, $5)
-`
-
-func (p Postgresql) CreateNodePerformanceData(data cardanoPb.NodePerformance, uuid string) error {
-	if _, err := p.dbConn.Exec(createNodePerformanceDataExec,
-		uuid, data.ProcessedTx, data.PeersIn, data.PeersOut, time.Now()); err != nil {
-		log.Println("CreateNodePerformanceData", err)
-		return err
-	}
-
-	return nil
-}
-
-const getCpuStateDataQuery = `
-	SELECT cpuqty, averageworkload
-	FROM cpustatedata
-`
-
-func (p Postgresql) GetCpuStateData() ([]commonPB.CPUState, error) {
-	rows, err := p.dbConn.Query(getCpuStateDataQuery)
-	if err != nil {
-		log.Fatal("GetCpuStateData", err)
-		return []commonPB.CPUState{}, err
-	}
-	defer rows.Close()
-
-	cpuStateDates := make([]commonPB.CPUState, 0, 10)
-	for rows.Next() {
-		cpuStateData := commonPB.CPUState{}
-		if err := rows.Scan(&cpuStateData.CpuQty,
-			&cpuStateData.AverageWorkload); err != nil {
-			log.Println("cpuStateDates: parse err", err)
-			continue
-		}
-
-		cpuStateDates = append(cpuStateDates, cpuStateData)
-	}
-
-	return cpuStateDates, nil
-}
-
-const createCpuStateDataExec = `
-	INSERT INTO cpustatedata
-	(uuid, cpuqty, averageworkload, lastupdate)
-	VALUES ($1, $2, $3, $4)
-`
-
-func (p Postgresql) CreateCpuStateData(data commonPB.CPUState, uuid string) error {
-	if _, err := p.dbConn.Exec(createCpuStateDataExec,
-		uuid, data.CpuQty, data.AverageWorkload, time.Now()); err != nil {
-		log.Println("CreateCpuStateData", err)
-		return err
-	}
-
-	return nil
-}
-
-const getNodesStateDataQuery = `
-	SELECT tipdiff, density
-	FROM nodestatedata
-`
-
-func (p Postgresql) GetNodeStateData() ([]cardanoPb.NodeState, error) {
-	rows, err := p.dbConn.Query(getNodesStateDataQuery)
-	if err != nil {
-		log.Fatal("GetNodeStateData", err)
-		return []cardanoPb.NodeState{}, err
-	}
-	defer rows.Close()
-
-	nodeStateDates := make([]cardanoPb.NodeState, 0, 10)
-	for rows.Next() {
-		nodeStateData := cardanoPb.NodeState{}
-		if err := rows.Scan(&nodeStateData.TipDiff,
-			&nodeStateData.Density); err != nil {
-			log.Println("nodeStateDates: parse err", err)
-			continue
-		}
-
-		nodeStateDates = append(nodeStateDates, nodeStateData)
-	}
-
-	return nodeStateDates, nil
-}
-
-const createNodeStateDataExec = `
-	INSERT INTO nodestatedata
-	(uuid, tipdiff, density, lastupdate) 
-	VALUES ($1, $2, $3, $4)
-`
-
-func (p Postgresql) CreateNodeStateData(data cardanoPb.NodeState, uuid string) error {
-	if _, err := p.dbConn.Exec(createNodeStateDataExec,
-		uuid, data.TipDiff, data.Density, time.Now()); err != nil {
-		log.Println("CreateNodeStateData", err)
 		return err
 	}
 
