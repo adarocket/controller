@@ -2,111 +2,37 @@ package postgresql
 
 import "log"
 
-const createNodeAuthTableExec = `
-	CREATE TABLE IF NOT EXISTS NodeAuth (
+const createNodesTableExec = `
+	CREATE TABLE IF NOT EXISTS Nodes (
     Ticker varchar(40) not null default '',
     Uuid varchar(40) PRIMARY KEY,
     Status varchar(40) not null default '',
+	Type varchar(40) not null default '',
+    Location varchar(40) not null default '',
+    NodeVersion varchar(40) not null default '',
 	LastUpdate timestamp without time zone not null)
 `
 
-const createNodeBasicDataTableExec = `
-	CREATE TABLE IF NOT EXISTS NodeBasicData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid),    
-    Ticker varchar(40) not null default '',
-    Type varchar(40) not null default '',
-    Location varchar(40) not null default '',
-    NodeVersion varchar(40) not null default '',
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
-const createServerBasicDataTableExec = `
-	CREATE TABLE IF NOT EXISTS ServerBasicData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid), 
+const createServerDataTableExec = `
+	CREATE TABLE IF NOT EXISTS ServerData (
+	Uuid varchar(40) REFERENCES Nodes(uuid), 
     Ipv4 varchar(40) not null default '',
     Ipv6 varchar(40) not null default '',
     LinuxName varchar(40) not null default '',
     LinuxVersion varchar(40) not null default '',
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
-const createEpochDataTableExec = `
-	CREATE TABLE IF NOT EXISTS EpochData (
-    Uuid varchar(40) REFERENCES NodeAuth(uuid), 
-	EpochNumber bigint not null default 0,
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
-const createKesDataTableExec = `
-	CREATE TABLE IF NOT EXISTS KesData (
-    Uuid varchar(40) REFERENCES NodeAuth(uuid), 
-    KesCurrent bigint not null default 0,
-    KesRemaining bigint not null default 0,
-    KesExpDate varchar(40) not null default '',
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
-const createBlocksDataTableExec = `
-	CREATE TABLE IF NOT EXISTS BlocksData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid), 
-    BlockLeader bigint not null default 0,
-    BlockAdopted bigint not null default 0,
-    BlockInvalid bigint not null default 0,
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
-const createUpdatesDataTableExec = `
-	CREATE TABLE IF NOT EXISTS UpdatesData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid), 
-    InformerActual varchar(40) not null default '',
+	InformerActual varchar(40) not null default '',
     InformerAvailable varchar(40) not null default '',
     UpdaterActual varchar(40) not null default '',
 	UpdaterAvailable varchar(40) not null default '',
 	PackagesAvailable bigint not null default 0,
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
-const createSecurityDataTableExec = `
-	CREATE TABLE IF NOT EXISTS SecurityData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid), 
-    SshAttackAttempts bigint not null default 0,
+	SshAttackAttempts bigint not null default 0,
     SecurityPackagesAvailable bigint not null default 0,
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
-const createStakeDataTableExec = `
-	CREATE TABLE IF NOT EXISTS StackData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid), 
-    LiveStake bigint not null default 0,
-    ActiveStake bigint not null default 0,
-    Pledge bigint not null default 0,
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
-const createOnlineDataTableExec = `
-	CREATE TABLE IF NOT EXISTS OnlineData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid), 
-    SinceStart bigint not null default 0,
+	SinceStart bigint not null default 0,
     Pings bigint not null default 0,
     NodeActive bool not null default false,
 	NodeActivePings bigint not null default 0,
 	ServerActive bool not null default false,
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
-const createMemoryStateDataTableExec = `
-	CREATE TABLE IF NOT EXISTS MemoryStateData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid), 
-    Total bigint not null default 0,
+	Total bigint not null default 0,
     Used bigint not null default 0,
     Buffers bigint not null default 0,
 	Cached bigint not null default 0,
@@ -119,128 +45,49 @@ const createMemoryStateDataTableExec = `
     SwapCached bigint not null default 0,
     SwapFree bigint not null default 0,
 	MemAvailableEnabled bool not null default false,
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
-const createCpuStateTableExec = `
-	CREATE TABLE IF NOT EXISTS CpuStateData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid), 
-    CpuQty bigint not null default 0,
+	CpuQty bigint not null default 0,
     AverageWorkload float8 not null default 0,
 	LastUpdate timestamp without time zone not null,
 	PRIMARY KEY(uuid, lastupdate))
 `
 
-const createNodeStateTableExec = `
-	CREATE TABLE IF NOT EXISTS NodeStateData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid), 
-    TipDiff bigint not null default 0,
+const createCardanoDataTableExec = `
+	CREATE TABLE IF NOT EXISTS CardanoData (
+    Uuid varchar(40) REFERENCES Nodes(uuid), 
+	EpochNumber bigint not null default 0,
+	KesCurrent bigint not null default 0,
+    KesRemaining bigint not null default 0,
+    KesExpDate varchar(40) not null default '',
+	BlockLeader bigint not null default 0,
+    BlockAdopted bigint not null default 0,
+    BlockInvalid bigint not null default 0,
+	LiveStake bigint not null default 0,
+    ActiveStake bigint not null default 0,
+    Pledge bigint not null default 0,
+	TipDiff bigint not null default 0,
     Density float8 not null default 0,
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
-const createNodePerformanceTableExec = `
-	CREATE TABLE IF NOT EXISTS NodePerformanceData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid), 
-    ProcessedTx bigint not null default 0,
+	ProcessedTx bigint not null default 0,
     PeersIn bigint not null default 0,
     PeersOut bigint not null default 0,
 	LastUpdate timestamp without time zone not null,
 	PRIMARY KEY(uuid, lastupdate))
 `
 
-const createChiaNodeFarmingTableExec = `
-	CREATE TABLE IF NOT EXISTS ChiaNodeFarmingData (
-	Uuid varchar(40) REFERENCES NodeAuth(uuid),
-	FarmingStatus varchar(40) not null default '',
-	TotalChiaFarmed float8 not null default 0,
-	UserTransactionFees float8 not null default 0,
-	BlockRewards float8 not null default 0,
-	LastHeightFarmed bigint not null default 0,
-	PlotCount bigint not null default 0,
-	TotalSizeOfPlots bigint not null default 0,
-	EstimatedNetworkSpace bigint not null default 0,
-	ExpectedTimeToWin varchar(40) not null default '',
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
-`
-
 func (p Postgresql) CreateAllTables() error {
-	if _, err := p.dbConn.Exec(createNodeAuthTableExec); err != nil {
-		log.Println("CreateNodeAuthTable", err)
+	if _, err := p.dbConn.Exec(createNodesTableExec); err != nil {
+		log.Println("createNodesTableExec", err)
 		return err
 	}
 
-	if _, err := p.dbConn.Exec(createNodeBasicDataTableExec); err != nil {
-		log.Println("createNodeBasicDataTableExec", err)
+	if _, err := p.dbConn.Exec(createServerDataTableExec); err != nil {
+		log.Println("createServerDataTableExec", err)
 		return err
 	}
 
-	if _, err := p.dbConn.Exec(createServerBasicDataTableExec); err != nil {
-		log.Println("createServerBasicDataTableExec", err)
+	if _, err := p.dbConn.Exec(createCardanoDataTableExec); err != nil {
+		log.Println("createCardanoDataTableExec", err)
 		return err
 	}
 
-	if _, err := p.dbConn.Exec(createEpochDataTableExec); err != nil {
-		log.Println("createEpochDataTableExec", err)
-		return err
-	}
-
-	if _, err := p.dbConn.Exec(createKesDataTableExec); err != nil {
-		log.Println("createKesDataTableExec", err)
-		return err
-	}
-
-	if _, err := p.dbConn.Exec(createBlocksDataTableExec); err != nil {
-		log.Println("createBlocksDataTableExec", err)
-		return err
-	}
-
-	if _, err := p.dbConn.Exec(createUpdatesDataTableExec); err != nil {
-		log.Println("createUpdatesDataTableExec", err)
-		return err
-	}
-
-	if _, err := p.dbConn.Exec(createSecurityDataTableExec); err != nil {
-		log.Println("createSecurityDataTableExec", err)
-		return err
-	}
-
-	if _, err := p.dbConn.Exec(createStakeDataTableExec); err != nil {
-		log.Println("createStakeDataTableExec", err)
-		return err
-	}
-
-	if _, err := p.dbConn.Exec(createOnlineDataTableExec); err != nil {
-		log.Println("createOnlineDataTableExec", err)
-		return err
-	}
-
-	if _, err := p.dbConn.Exec(createMemoryStateDataTableExec); err != nil {
-		log.Println("createMemoryStateDataTableExec", err)
-		return err
-	}
-
-	if _, err := p.dbConn.Exec(createCpuStateTableExec); err != nil {
-		log.Println("createCpuStateTableExec", err)
-		return err
-	}
-
-	if _, err := p.dbConn.Exec(createNodeStateTableExec); err != nil {
-		log.Println("createNodeStateTableExec", err)
-		return err
-	}
-
-	if _, err := p.dbConn.Exec(createNodePerformanceTableExec); err != nil {
-		log.Println("createNodePerformanceTableExec", err)
-		return err
-	}
-
-	if _, err := p.dbConn.Exec(createChiaNodeFarmingTableExec); err != nil {
-		log.Println("createChiaNodeFarmingTableExec", err)
-		return err
-	}
 	return nil
 }
