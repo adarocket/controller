@@ -8,7 +8,7 @@ import (
 
 const getNodesDataQuery = `
 	SELECT ticker, uuid, status, type, 
-	       location, node_version, last_update 
+	       location, node_version, blockchain, last_update 
 	FROM nodes
 `
 
@@ -24,7 +24,7 @@ func (p Postgresql) GetNodesData() ([]structs.Node, error) {
 	for rows.Next() {
 		data := structs.Node{}
 		if err := rows.Scan(&data.NodeAuthData.Ticker, &data.Uuid, &data.Status,
-			&data.Type, &data.Location, &data.NodeVersion, time.Now()); err != nil {
+			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain, time.Now()); err != nil {
 			log.Println("NodesAuth: parse err", err)
 			continue
 		}
@@ -38,14 +38,22 @@ func (p Postgresql) GetNodesData() ([]structs.Node, error) {
 const createNodeExec = `
 	INSERT INTO Nodes
 	(ticker, uuid, status, type, location,
-	 node_version, last_update) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7)
+	 node_version, blockchain, last_update) 
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	ON CONFLICT (uuid) DO UPDATE 
+  	SET ticker 			= excluded.ticker,
+  	    status 			= excluded.status,
+  	    type 			= excluded.type,
+  	    location 		= excluded.location,
+  	    node_version 	= excluded.node_version,
+  	    blockchain 		= excluded.blockchain,
+  	    last_update 	= excluded.last_update;
 `
 
 func (p Postgresql) CreateNodeData(data structs.Node) error {
 	if _, err := p.dbConn.Exec(createNodeExec,
 		data.NodeAuthData.Ticker, data.Uuid, data.Status,
-		data.Type, data.Location, data.NodeVersion, time.Now()); err != nil {
+		data.Type, data.Location, data.NodeVersion, data.Blockchain, time.Now()); err != nil {
 		log.Println("CreateNode", err)
 		return err
 	}
