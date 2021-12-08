@@ -27,10 +27,6 @@ func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 			continue
 		}
 
-		if err := db.Ping(); err != nil {
-			log.Println(err)
-		}
-
 		dataNodes := structs.Node{
 			NodeAuthData:  *value.NodeAuthData,
 			NodeBasicData: *stats.NodeBasicData,
@@ -38,6 +34,9 @@ func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 		if err := db.CreateNodeData(dataNodes); err != nil {
 			log.Println(err)
 			log.Println("lost data", dataNodes)
+			if err := db.Ping(); err != nil {
+				log.Println(err)
+			}
 			continue
 		}
 
@@ -53,6 +52,9 @@ func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 		if err := db.CreateNodeServerData(dataServer); err != nil {
 			log.Println(err)
 			log.Println("lost data", dataServer)
+			if err := db.Ping(); err != nil {
+				log.Println(err)
+			}
 		}
 
 		dataCardano := structs.CardanoData{
@@ -67,6 +69,9 @@ func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 		if err := db.CreateCardanoData(dataCardano); err != nil {
 			log.Println(err)
 			log.Println("lost data", dataCardano)
+			if err := db.Ping(); err != nil {
+				log.Println(err)
+			}
 		}
 	}
 
