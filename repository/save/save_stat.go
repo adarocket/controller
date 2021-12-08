@@ -70,7 +70,7 @@ func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 			log.Println(err)
 			log.Println("lost data", dataCardano)
 		}
-
-		server.NodeStatistics = map[string]*cardano.SaveStatisticRequest{}
 	}
+
+	server.NodeStatistics = map[string]*cardano.SaveStatisticRequest{}
 }
