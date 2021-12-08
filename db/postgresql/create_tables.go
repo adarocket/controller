@@ -3,35 +3,35 @@ package postgresql
 import "log"
 
 const createNodesTableExec = `
-	CREATE TABLE IF NOT EXISTS Nodes (
+	CREATE TABLE IF NOT EXISTS nodes (
     Ticker varchar(40) not null default '',
     Uuid varchar(40) PRIMARY KEY,
     Status varchar(40) not null default '',
 	Type varchar(40) not null default '',
     Location varchar(40) not null default '',
-    NodeVersion varchar(40) not null default '',
-	LastUpdate timestamp without time zone not null)
+    Node_Version varchar(40) not null default '',
+	Last_Update timestamp without time zone not null)
 `
 
 const createServerDataTableExec = `
-	CREATE TABLE IF NOT EXISTS ServerData (
+	CREATE TABLE IF NOT EXISTS node_server_data (
 	Uuid varchar(40) REFERENCES Nodes(uuid), 
     Ipv4 varchar(40) not null default '',
     Ipv6 varchar(40) not null default '',
-    LinuxName varchar(40) not null default '',
-    LinuxVersion varchar(40) not null default '',
-	InformerActual varchar(40) not null default '',
-    InformerAvailable varchar(40) not null default '',
-    UpdaterActual varchar(40) not null default '',
-	UpdaterAvailable varchar(40) not null default '',
-	PackagesAvailable bigint not null default 0,
-	SshAttackAttempts bigint not null default 0,
-    SecurityPackagesAvailable bigint not null default 0,
-	SinceStart bigint not null default 0,
+    Linux_Name varchar(40) not null default '',
+    Linux_Version varchar(40) not null default '',
+	Informer_Actual varchar(40) not null default '',
+    Informer_Available varchar(40) not null default '',
+    Updater_Actual varchar(40) not null default '',
+	Updater_Available varchar(40) not null default '',
+	Packages_Available bigint not null default 0,
+	SshAttack_Attempts bigint not null default 0,
+    Security_Packages_Available bigint not null default 0,
+	Since_Start bigint not null default 0,
     Pings bigint not null default 0,
-    NodeActive bool not null default false,
-	NodeActivePings bigint not null default 0,
-	ServerActive bool not null default false,
+    Node_Active bool not null default false,
+	Node_Active_Pings bigint not null default 0,
+	Server_Active bool not null default false,
 	Total bigint not null default 0,
     Used bigint not null default 0,
     Buffers bigint not null default 0,
@@ -40,37 +40,37 @@ const createServerDataTableExec = `
     Available bigint not null default 0,
     Active bigint not null default 0,
 	Inactive bigint not null default 0,
-	SwapTotal bigint not null default 0,
-	SwapUsed bigint not null default 0,
-    SwapCached bigint not null default 0,
-    SwapFree bigint not null default 0,
-	MemAvailableEnabled bool not null default false,
-	CpuQty bigint not null default 0,
-    AverageWorkload float8 not null default 0,
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
+	Swap_Total bigint not null default 0,
+	Swap_Used bigint not null default 0,
+    Swap_Cached bigint not null default 0,
+    Swap_Free bigint not null default 0,
+	Mem_Available_Enabled bool not null default false,
+	Cpu_Qty bigint not null default 0,
+    Average_Workload float8 not null default 0,
+	Last_Update timestamp without time zone not null,
+	PRIMARY KEY(uuid, last_update))
 `
 
 const createCardanoDataTableExec = `
-	CREATE TABLE IF NOT EXISTS CardanoData (
+	CREATE TABLE IF NOT EXISTS cardano_data (
     Uuid varchar(40) REFERENCES Nodes(uuid), 
-	EpochNumber bigint not null default 0,
-	KesCurrent bigint not null default 0,
-    KesRemaining bigint not null default 0,
-    KesExpDate varchar(40) not null default '',
-	BlockLeader bigint not null default 0,
-    BlockAdopted bigint not null default 0,
-    BlockInvalid bigint not null default 0,
-	LiveStake bigint not null default 0,
-    ActiveStake bigint not null default 0,
+	Epoch_Number bigint not null default 0,
+	Kes_Current bigint not null default 0,
+    Kes_Remaining bigint not null default 0,
+    Kes_Exp_Date varchar(40) not null default '',
+	Block_Leader bigint not null default 0,
+    Block_Adopted bigint not null default 0,
+    Block_Invalid bigint not null default 0,
+	Live_Stake bigint not null default 0,
+    Active_Stake bigint not null default 0,
     Pledge bigint not null default 0,
-	TipDiff bigint not null default 0,
+	Tip_Diff bigint not null default 0,
     Density float8 not null default 0,
-	ProcessedTx bigint not null default 0,
-    PeersIn bigint not null default 0,
-    PeersOut bigint not null default 0,
-	LastUpdate timestamp without time zone not null,
-	PRIMARY KEY(uuid, lastupdate))
+	Processed_Tx bigint not null default 0,
+    Peers_In bigint not null default 0,
+    Peers_Out bigint not null default 0,
+	Last_Update timestamp without time zone not null,
+	PRIMARY KEY(uuid, last_update))
 `
 
 func (p Postgresql) CreateAllTables() error {
