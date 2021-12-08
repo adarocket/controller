@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/adarocket/controller/db/postgresql"
+	"github.com/adarocket/controller/db/save"
 	"log"
 	"net"
 	"time"
@@ -53,9 +55,16 @@ func main() {
 
 	interceptor := auth.NewAuthInterceptor(jwtManager, accessiblePermissions())
 
-	/*postgresql.InitDatabase(loadedConfig.DBConfig)
-	postgresql.Postg.CreateAllTables()
-	save.AutoSave(informServer)*/
+	db, err := postgresql.InitDatabase(loadedConfig)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	err = db.CreateAllTables()
+	if err != nil {
+		log.Println(err)
+	}
+	go save.AutoSave(cardanoServer, db)
 
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),

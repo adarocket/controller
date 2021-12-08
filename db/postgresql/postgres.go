@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/adarocket/controller/config"
+	_ "github.com/lib/pq"
 )
 
 func InitDatabase(config config.Config) (Postgresql, error) {
