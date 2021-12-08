@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"log"
 )
 
 // AuthInterceptor -
@@ -27,7 +28,7 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
-		//log.Println("--> unary interceptor: ", info.FullMethod)
+		log.Println("--> unary interceptor: ", info.FullMethod)
 
 		if err := interceptor.authorize(ctx, info.FullMethod); err != nil {
 			return nil, err
