@@ -8,11 +8,9 @@ import (
 	"time"
 )
 
-const timeout = 5
-
-func AutoSave(server *informer.CardanoInformServer, db structs.Database) {
+func AutoSave(server *informer.CardanoInformServer, db structs.Database, minutes int) {
 	go func() {
-		for _ = range time.Tick(time.Minute * timeout) {
+		for _ = range time.Tick(time.Minute * time.Duration(minutes)) {
 			saveToDb(server, db)
 		}
 	}()

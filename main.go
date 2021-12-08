@@ -63,7 +63,7 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	go save.AutoSave(cardanoServer, db)
+	go save.AutoSave(cardanoServer, db, 5)
 
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),
