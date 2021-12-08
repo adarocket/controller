@@ -8,8 +8,8 @@ import (
 
 const getNodesDataQuery = `
 	SELECT ticker, uuid, status, type, 
-	       location, nodeversion, lastupdate 
-	FROM Nodes
+	       location, node_version, last_update 
+	FROM nodes
 `
 
 func (p Postgresql) GetNodesData() ([]structs.Node, error) {
@@ -37,7 +37,8 @@ func (p Postgresql) GetNodesData() ([]structs.Node, error) {
 
 const createNodeExec = `
 	INSERT INTO Nodes
-	(TICKER, UUID, STATUS, TYPE, LOCATION, NODEVERSION, LASTUPDATE) 
+	(ticker, uuid, status, type, location,
+	 node_version, last_update) 
 	VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
@@ -53,13 +54,14 @@ func (p Postgresql) CreateNodeData(data structs.Node) error {
 }
 
 const getNodeServerDataQuery = `
-	SELECT uuid, ipv4, ipv6, linuxname, linuxversion, informeractual, informeravailable,
-	       updateractual, updateravailable, packagesavailable, sshattackattempts,
-	       securitypackagesavailable, sincestart, pings, nodeactive, nodeactivepings,
-	       serveractive, total, used, buffers, cached, free, available, active, inactive,
-	       swaptotal, swapused, swapcached, swapfree, memavailableenabled,
-	       cpuqty, averageworkload
-	FROM serverdata
+	SELECT uuid, ipv4, ipv6, linux_name, linux_version,
+	       informer_actual, informer_available, updater_actual,
+	       updater_available, packages_available, sshattack_attempts,
+	       security_packages_available, since_start, pings, node_active,
+	       node_active_pings, server_active, total, used, buffers, cached,
+	       free, available, active, inactive, swap_total, swap_used, swap_cached,
+	       swap_free, mem_available_enabled, cpu_qty, average_workload, last_update
+	FROM node_server_data
 `
 
 func (p Postgresql) GetNodeServerData() ([]structs.ServerData, error) {
@@ -93,14 +95,14 @@ func (p Postgresql) GetNodeServerData() ([]structs.ServerData, error) {
 }
 
 const createNodeServerDataExec = `
-	INSERT INTO serverdata 
-	(uuid, ipv4, ipv6, linuxname, linuxversion, informeractual,
-	 informeravailable, updateractual, updateravailable, 
-	 packagesavailable, sshattackattempts, securitypackagesavailable,
-	 sincestart, pings, nodeactive, nodeactivepings, serveractive,
-	 total, used, buffers, cached, free, available, active, 
-	 inactive, swaptotal, swapused, swapcached, swapfree,
-	 memavailableenabled, cpuqty, averageworkload, lastupdate) 
+	INSERT INTO node_server_data 
+	(uuid, ipv4, ipv6, linux_name, linux_version,
+	 informer_actual, informer_available, updater_actual,
+	 updater_available, packages_available, sshattack_attempts,
+	 security_packages_available, since_start, pings, node_active,
+	 node_active_pings, server_active, total, used, buffers, cached,
+	 free, available, active, inactive, swap_total, swap_used, swap_cached,
+	 swap_free, mem_available_enabled, cpu_qty, average_workload, last_update) 
 	VALUES ($1, $2, $3, $4, $5, $6,
 	        $7, $8, $9, $10, $11, $12,
 	        $13, $14, $15, $16, $17, $18,
@@ -128,11 +130,11 @@ func (p Postgresql) CreateNodeServerData(data structs.ServerData) error {
 }
 
 const getCardanoData = `
-	SELECT uuid, epochnumber, kescurrent, kesremaining,
-	       kesexpdate, blockleader, blockadopted, blockinvalid,
-	       livestake, activestake, pledge, tipdiff, density, processedtx,
-	       peersin, peersout, lastupdate
-	FROM cardanodata
+	SELECT uuid, epoch_number, kes_current, kes_remaining,
+	       kes_exp_date, block_leader, block_adopted, block_invalid,
+	       live_stake, active_stake, pledge, tip_diff, density, processed_tx,
+	       peers_in, peers_out, last_update
+	FROM cardano_data
 `
 
 func (p Postgresql) GetCardanoData() ([]structs.CardanoData, error) {
@@ -162,11 +164,11 @@ func (p Postgresql) GetCardanoData() ([]structs.CardanoData, error) {
 }
 
 const createCardanoDataExec = `
-	INSERT INTO cardanodata
-	(uuid, epochnumber, kescurrent, kesremaining,
-	 kesexpdate, blockleader, blockadopted, blockinvalid,
-	 livestake, activestake, pledge, tipdiff, density,
-	 processedtx, peersin, peersout, lastupdate) 
+	INSERT INTO cardano_data
+	(uuid, epoch_number, kes_current, kes_remaining,
+	 kes_exp_date, block_leader, block_adopted, block_invalid,
+	 live_stake, active_stake, pledge, tip_diff, density, processed_tx,
+	 peers_in, peers_out, last_update) 
 	VALUES ($1, $2, $3, $4, $5, $6,
 	        $7, $8, $9, $10, $11, $12,
 	        $13, $14, $15, $16, $17)
