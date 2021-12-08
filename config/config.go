@@ -30,7 +30,7 @@ type DBConfig struct {
 	Sslmode string `json:"sslmode"`
 }
 
-const cConfigPath = "controller.conf"
+const cConfigPath = "/etc/ada-rocket/controller.conf"
 
 // var loadedConfig Config
 
