@@ -29,6 +29,10 @@ func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 			continue
 		}
 
+		if err := db.Ping(); err != nil {
+			log.Println(err)
+		}
+
 		dataNodes := structs.Nodes{
 			NodeAuthData:  *value.NodeAuthData,
 			NodeBasicData: *stats.NodeBasicData,
