@@ -13,7 +13,7 @@ type Database interface {
 	Ping() error
 }
 
-type Nodes struct {
+type Node struct {
 	commonPB.NodeAuthData
 	commonPB.NodeBasicData
 }
@@ -39,8 +39,8 @@ type CardanoData struct {
 }
 
 type NodeInterface interface {
-	GetNodesData() ([]Nodes, error)
-	CreateNodeData(data Nodes) error
+	GetNodesData() ([]Node, error)
+	CreateNodeData(data Node) error
 }
 
 type ServerDataInterface interface {

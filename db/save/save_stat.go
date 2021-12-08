@@ -33,7 +33,7 @@ func saveToDb(server *informer.CardanoInformServer, db structs.Database) {
 			log.Println(err)
 		}
 
-		dataNodes := structs.Nodes{
+		dataNodes := structs.Node{
 			NodeAuthData:  *value.NodeAuthData,
 			NodeBasicData: *stats.NodeBasicData,
 		}

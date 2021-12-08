@@ -12,17 +12,17 @@ const getNodesDataQuery = `
 	FROM Nodes
 `
 
-func (p Postgresql) GetNodesData() ([]structs.Nodes, error) {
+func (p Postgresql) GetNodesData() ([]structs.Node, error) {
 	rows, err := p.dbConn.Query(getNodesDataQuery)
 	if err != nil {
 		log.Fatal("GetNodesAuthData", err)
-		return []structs.Nodes{}, err
+		return []structs.Node{}, err
 	}
 	defer rows.Close()
 
-	nodesData := make([]structs.Nodes, 0, 10)
+	nodesData := make([]structs.Node, 0, 10)
 	for rows.Next() {
-		data := structs.Nodes{}
+		data := structs.Node{}
 		if err := rows.Scan(&data.NodeAuthData.Ticker, &data.Uuid, &data.Status,
 			&data.Type, &data.Location, &data.NodeVersion, time.Now()); err != nil {
 			log.Println("NodesAuth: parse err", err)
@@ -41,7 +41,7 @@ const createNodeExec = `
 	VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
-func (p Postgresql) CreateNodeData(data structs.Nodes) error {
+func (p Postgresql) CreateNodeData(data structs.Node) error {
 	if _, err := p.dbConn.Exec(createNodeExec,
 		data.NodeAuthData.Ticker, data.Uuid, data.Status,
 		data.Type, data.Location, data.NodeVersion, time.Now()); err != nil {
