@@ -9,7 +9,7 @@ type Database interface {
 	CreateAllTables() error
 	NodeInterface
 	ServerDataInterface
-	CaradanoDataInterface
+	CardanoDataInterface
 	Ping() error
 }
 
@@ -40,6 +40,7 @@ type CardanoData struct {
 
 type NodeInterface interface {
 	GetNodesData() ([]Node, error)
+	GetNodeData(uuid string) (Node, error)
 	CreateNodeData(data Node) error
 }
 
@@ -48,7 +49,7 @@ type ServerDataInterface interface {
 	CreateNodeServerData(data ServerData) error
 }
 
-type CaradanoDataInterface interface {
+type CardanoDataInterface interface {
 	GetCardanoData() ([]CardanoData, error)
 	CreateCardanoData(data CardanoData) error
 }

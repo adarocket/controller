@@ -36,6 +36,34 @@ func (p Postgresql) GetNodesData() ([]structs.Node, error) {
 	return nodesData, nil
 }
 
+const getNodeDataQuery = `
+	SELECT ticker, uuid, status, type, 
+	       location, node_version, blockchain 
+	FROM nodes
+	WHERE uuid = $1
+`
+
+func (p Postgresql) GetNodeData(uuid string) (structs.Node, error) {
+	rows, err := p.dbConn.Query(getNodeDataQuery, uuid)
+	if err != nil {
+		log.Fatal("GetNodesAuthData", err)
+		return structs.Node{}, err
+	}
+	defer rows.Close()
+
+	data := structs.Node{}
+	for rows.Next() {
+		err := rows.Scan(&data.NodeAuthData.Ticker, &data.Uuid, &data.Status,
+			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain)
+		if err != nil {
+			log.Println("NodesAuth: parse err", err)
+			continue
+		}
+	}
+
+	return data, nil
+}
+
 const createNodeExec = `
 	INSERT INTO Nodes
 	(ticker, uuid, status, type, location,
