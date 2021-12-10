@@ -48,7 +48,8 @@ func LoadConfig() (loadedConfig Config, err error) {
 		return loadedConfig, nil
 	}
 
-	log.Println("Trying reserve config path...")
+	log.Println("Config", usrHomePath+cConfigPath, "not found")
+	log.Println("Trying", usrHomePath+cConfigPathReserve, "reserve config path...")
 	err = goconfig.LoadConfig(usrHomePath+cConfigPathReserve, &loadedConfig)
 
 	return loadedConfig, err
