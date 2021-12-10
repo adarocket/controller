@@ -29,19 +29,23 @@ type DBConfig struct {
 	Sslmode string `json:"sslmode"`
 }
 
-const cConfigPath = "/etc/ada-rocket/controller.conf"
+const cConfigPath = "etc/black-rocket/controller.conf"
+const cConfigPathReserve = "etc/ada-rocket/controller.conf"
 
 // var loadedConfig Config
 
 func LoadConfig() (loadedConfig Config, err error) {
 	usrHomePath, err := goconfig.GetUserHomePath()
-	if err == nil {
-		err = goconfig.LoadConfig(usrHomePath+cConfigPath, &loadedConfig)
-		if err != nil {
-			return loadedConfig, err
-		}
-	} else {
+	if err != nil {
 		return loadedConfig, err
 	}
+
+	err = goconfig.LoadConfig(usrHomePath+cConfigPath, &loadedConfig)
+	if err == nil {
+		return loadedConfig, nil
+	}
+
+	err = goconfig.LoadConfig(usrHomePath+cConfigPathReserve, &loadedConfig)
+
 	return loadedConfig, err
 }
