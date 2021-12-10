@@ -4,7 +4,7 @@ import "log"
 
 const createNodesTableExec = `
     CREATE TABLE IF NOT EXISTS nodes (
-    ticker             varchar(40) not null default '',
+    ticker             varchar(256) not null default '',
     uuid               varchar(40) PRIMARY KEY,
     status             varchar(40) not null default '',
     type               varchar(40) not null default '',
