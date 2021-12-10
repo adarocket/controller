@@ -84,6 +84,7 @@ func main() {
 func createUser(userStore user.UserStore, username, password string, permissions []string) error {
 	user, err := user.NewUser(username, password, permissions)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return userStore.Save(user)
@@ -91,6 +92,7 @@ func createUser(userStore user.UserStore, username, password string, permissions
 
 func seedUsers(userStore user.UserStore) error {
 	if err := createUser(userStore, "admin1", "secret", []string{"basic", "server_technical", "node_technical", "node_financial"}); err != nil {
+		log.Println(err)
 		return err
 	}
 

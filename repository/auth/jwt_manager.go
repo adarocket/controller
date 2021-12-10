@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"github.com/adarocket/controller/repository/user"
+	"log"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -53,6 +54,7 @@ func (manager *JWTManager) Verify(accessToken string) (*UserClaims, error) {
 		func(token *jwt.Token) (interface{}, error) {
 			_, ok := token.Method.(*jwt.SigningMethodHMAC)
 			if !ok {
+				log.Println("unexpected token signing method")
 				return nil, fmt.Errorf("unexpected token signing method")
 			}
 
@@ -61,11 +63,13 @@ func (manager *JWTManager) Verify(accessToken string) (*UserClaims, error) {
 	)
 
 	if err != nil {
+		log.Println("invalid token")
 		return nil, fmt.Errorf("invalid token: %w", err)
 	}
 
 	claims, ok := token.Claims.(*UserClaims)
 	if !ok {
+		log.Println("invalid token claims")
 		return nil, fmt.Errorf("invalid token claims")
 	}
 

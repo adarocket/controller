@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/bykovme/goconfig"
+	"log"
 )
 
 // Config - structure of config file
@@ -35,8 +36,10 @@ const cConfigPathReserve = "etc/ada-rocket/controller.conf"
 // var loadedConfig Config
 
 func LoadConfig() (loadedConfig Config, err error) {
+	log.Println("Start loading config...")
 	usrHomePath, err := goconfig.GetUserHomePath()
 	if err != nil {
+		log.Println(err)
 		return loadedConfig, err
 	}
 
@@ -45,6 +48,7 @@ func LoadConfig() (loadedConfig Config, err error) {
 		return loadedConfig, nil
 	}
 
+	log.Println("Trying reserve config path...")
 	err = goconfig.LoadConfig(usrHomePath+cConfigPathReserve, &loadedConfig)
 
 	return loadedConfig, err
