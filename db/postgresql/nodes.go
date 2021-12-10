@@ -8,7 +8,7 @@ import (
 
 const getNodesDataQuery = `
 	SELECT ticker, uuid, status, type, 
-	       location, node_version, blockchain 
+	       location, node_version, blockchain, last_update 
 	FROM nodes
 `
 
@@ -24,7 +24,7 @@ func (p postgresql) GetNodesData() ([]structs.Node, error) {
 	for rows.Next() {
 		data := structs.Node{}
 		err := rows.Scan(&data.NodeAuthData.Ticker, &data.Uuid, &data.Status,
-			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain)
+			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain, &data.LastUpdate)
 		if err != nil {
 			log.Println("NodesAuth: parse err", err)
 			continue
@@ -38,7 +38,7 @@ func (p postgresql) GetNodesData() ([]structs.Node, error) {
 
 const getNodeDataQuery = `
 	SELECT ticker, uuid, status, type, 
-	       location, node_version, blockchain 
+	       location, node_version, blockchain, last_update 
 	FROM nodes
 	WHERE uuid = $1
 `
@@ -54,7 +54,7 @@ func (p postgresql) GetNodeData(uuid string) (structs.Node, error) {
 	data := structs.Node{}
 	for rows.Next() {
 		err := rows.Scan(&data.NodeAuthData.Ticker, &data.Uuid, &data.Status,
-			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain)
+			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain, &data.LastUpdate)
 		if err != nil {
 			log.Println("NodesAuth: parse err", err)
 			continue
@@ -98,7 +98,7 @@ const getNodeServerDataQuery = `
 	       security_packages_available, since_start, pings, node_active,
 	       node_active_pings, server_active, total, used, buffers, cached,
 	       free, available, active, inactive, swap_total, swap_used, swap_cached,
-	       swap_free, mem_available_enabled, cpu_qty, average_workload
+	       swap_free, mem_available_enabled, cpu_qty, average_workload, last_update
 	FROM node_server_data
 `
 
@@ -121,7 +121,7 @@ func (p postgresql) GetNodeServerData() ([]structs.ServerData, error) {
 			&data.Total, &data.Used, &data.Buffers, &data.Cached, &data.Free,
 			&data.Available, &data.Active, &data.Inactive, &data.SwapTotal, &data.SwapUsed,
 			&data.SwapCached, &data.SwapFree, &data.MemAvailableEnabled, &data.CpuQty,
-			&data.AverageWorkload)
+			&data.AverageWorkload, &data.LastUpdate)
 		if err != nil {
 			log.Println("NodesAuth: parse err", err)
 			continue
@@ -173,7 +173,7 @@ const getCardanoData = `
 	SELECT uuid, epoch_number, kes_current, kes_remaining,
 	       kes_exp_date, block_leader, block_adopted, block_invalid,
 	       live_stake, active_stake, pledge, tip_diff, density, processed_tx,
-	       peers_in, peers_out
+	       peers_in, peers_out, last_update
 	FROM cardano_data
 `
 
@@ -192,7 +192,7 @@ func (p postgresql) GetCardanoData() ([]structs.CardanoData, error) {
 			&data.KesExpDate, &data.BlockLeader, &data.BlockAdopted,
 			&data.BlockInvalid, &data.LiveStake, &data.ActiveStake,
 			&data.Pledge, &data.TipDiff, &data.Density,
-			&data.ProcessedTx, &data.PeersIn, &data.PeersOut)
+			&data.ProcessedTx, &data.PeersIn, &data.PeersOut, &data.LastUpdate)
 		if err != nil {
 			log.Println("serverBasicData: parse err", err)
 			continue
