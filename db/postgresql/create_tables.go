@@ -11,7 +11,7 @@ const createNodesTableExec = `
     location           varchar(40) not null default '',
     node_Version       varchar(40) not null default '',
     blockchain         varchar(40) not null default '',
-    last_Update        timestamp   without time zone not null)
+    last_Update        timestamp   with time zone not null)
 `
 
 const createServerDataTableExec = `
@@ -48,7 +48,7 @@ const createServerDataTableExec = `
     mem_Available_Enabled            bool        not null default false,
     cpu_Qty                          bigint      not null default 0,
     average_Workload                 float8      not null default 0,
-    last_Update                      timestamp   without time zone not null,
+    last_Update                      timestamp   with time zone not null,
     PRIMARY KEY(uuid, last_update))
 `
 
@@ -70,7 +70,7 @@ const createCardanoDataTableExec = `
     processed_Tx     bigint         not null default 0,
     peers_In         bigint         not null default 0,
     peers_Out        bigint         not null default 0,
-    last_Update      timestamp      without time zone not null,
+    last_Update      timestamp      with time zone not null,
     PRIMARY KEY(uuid, last_update))
 `
 
