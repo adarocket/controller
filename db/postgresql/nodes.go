@@ -8,7 +8,7 @@ import (
 
 const getNodesDataQuery = `
 	SELECT ticker, uuid, status, type, 
-	       location, node_version, blockchain, last_update 
+	       location, node_version, blockchain 
 	FROM nodes
 `
 
@@ -24,7 +24,7 @@ func (p Postgresql) GetNodesData() ([]structs.Node, error) {
 	for rows.Next() {
 		data := structs.Node{}
 		err := rows.Scan(&data.NodeAuthData.Ticker, &data.Uuid, &data.Status,
-			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain, time.Now())
+			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain)
 		if err != nil {
 			log.Println("NodesAuth: parse err", err)
 			continue
@@ -70,7 +70,7 @@ const getNodeServerDataQuery = `
 	       security_packages_available, since_start, pings, node_active,
 	       node_active_pings, server_active, total, used, buffers, cached,
 	       free, available, active, inactive, swap_total, swap_used, swap_cached,
-	       swap_free, mem_available_enabled, cpu_qty, average_workload, last_update
+	       swap_free, mem_available_enabled, cpu_qty, average_workload
 	FROM node_server_data
 `
 
@@ -145,7 +145,7 @@ const getCardanoData = `
 	SELECT uuid, epoch_number, kes_current, kes_remaining,
 	       kes_exp_date, block_leader, block_adopted, block_invalid,
 	       live_stake, active_stake, pledge, tip_diff, density, processed_tx,
-	       peers_in, peers_out, last_update
+	       peers_in, peers_out
 	FROM cardano_data
 `
 
