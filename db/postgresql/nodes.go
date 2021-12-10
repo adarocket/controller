@@ -23,8 +23,9 @@ func (p Postgresql) GetNodesData() ([]structs.Node, error) {
 	nodesData := make([]structs.Node, 0, 10)
 	for rows.Next() {
 		data := structs.Node{}
-		if err := rows.Scan(&data.NodeAuthData.Ticker, &data.Uuid, &data.Status,
-			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain, time.Now()); err != nil {
+		err := rows.Scan(&data.NodeAuthData.Ticker, &data.Uuid, &data.Status,
+			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain, time.Now())
+		if err != nil {
 			log.Println("NodesAuth: parse err", err)
 			continue
 		}
@@ -51,9 +52,10 @@ const createNodeExec = `
 `
 
 func (p Postgresql) CreateNodeData(data structs.Node) error {
-	if _, err := p.dbConn.Exec(createNodeExec,
+	_, err := p.dbConn.Exec(createNodeExec,
 		data.NodeAuthData.Ticker, data.Uuid, data.Status,
-		data.Type, data.Location, data.NodeVersion, data.Blockchain, time.Now()); err != nil {
+		data.Type, data.Location, data.NodeVersion, data.Blockchain, time.Now())
+	if err != nil {
 		log.Println("CreateNode", err)
 		return err
 	}
@@ -83,7 +85,7 @@ func (p Postgresql) GetNodeServerData() ([]structs.ServerData, error) {
 	serverData := make([]structs.ServerData, 0, 10)
 	for rows.Next() {
 		data := structs.ServerData{}
-		if err := rows.Scan(&data.Uuid, &data.Ipv4, data.Ipv6, &data.LinuxName, &data.LinuxVersion,
+		err := rows.Scan(&data.Uuid, &data.Ipv4, data.Ipv6, &data.LinuxName, &data.LinuxVersion,
 			&data.InformerActual, &data.InformerAvailable, &data.UpdaterActual,
 			&data.UpdaterAvailable, &data.PackagesAvailable, &data.SshAttackAttempts,
 			&data.SecurityPackagesAvailable, &data.SinceStart, &data.Pings,
@@ -91,7 +93,8 @@ func (p Postgresql) GetNodeServerData() ([]structs.ServerData, error) {
 			&data.Total, &data.Used, &data.Buffers, &data.Cached, &data.Free,
 			&data.Available, &data.Active, &data.Inactive, &data.SwapTotal, &data.SwapUsed,
 			&data.SwapCached, &data.SwapFree, &data.MemAvailableEnabled, &data.CpuQty,
-			&data.AverageWorkload); err != nil {
+			&data.AverageWorkload)
+		if err != nil {
 			log.Println("NodesAuth: parse err", err)
 			continue
 		}
@@ -120,7 +123,7 @@ const createNodeServerDataExec = `
 `
 
 func (p Postgresql) CreateNodeServerData(data structs.ServerData) error {
-	if _, err := p.dbConn.Exec(createNodeServerDataExec,
+	_, err := p.dbConn.Exec(createNodeServerDataExec,
 		data.Uuid, data.Ipv4, data.Ipv6, data.LinuxName, data.LinuxVersion,
 		data.InformerActual, data.InformerAvailable, data.UpdaterActual,
 		data.UpdaterAvailable, data.PackagesAvailable, data.SshAttackAttempts,
@@ -129,7 +132,8 @@ func (p Postgresql) CreateNodeServerData(data structs.ServerData) error {
 		data.Total, data.Used, data.Buffers, data.Cached, data.Free,
 		data.Available, data.Active, data.Inactive, data.SwapTotal, data.SwapUsed,
 		data.SwapCached, data.SwapFree, data.MemAvailableEnabled, data.CpuQty,
-		data.AverageWorkload, time.Now()); err != nil {
+		data.AverageWorkload, time.Now())
+	if err != nil {
 		log.Println("CreateNodeServerData", err)
 		return err
 	}
@@ -156,11 +160,12 @@ func (p Postgresql) GetCardanoData() ([]structs.CardanoData, error) {
 	cardanoData := make([]structs.CardanoData, 0, 10)
 	for rows.Next() {
 		data := structs.CardanoData{}
-		if err := rows.Scan(&data.Uuid, &data.EpochNumber, &data.KesCurrent, &data.KesRemaining,
+		err := rows.Scan(&data.Uuid, &data.EpochNumber, &data.KesCurrent, &data.KesRemaining,
 			&data.KesExpDate, &data.BlockLeader, &data.BlockAdopted,
 			&data.BlockInvalid, &data.LiveStake, &data.ActiveStake,
 			&data.Pledge, &data.TipDiff, &data.Density,
-			&data.ProcessedTx, &data.PeersIn, &data.PeersOut); err != nil {
+			&data.ProcessedTx, &data.PeersIn, &data.PeersOut)
+		if err != nil {
 			log.Println("serverBasicData: parse err", err)
 			continue
 		}
@@ -183,12 +188,13 @@ const createCardanoDataExec = `
 `
 
 func (p Postgresql) CreateCardanoData(data structs.CardanoData) error {
-	if _, err := p.dbConn.Exec(createCardanoDataExec,
+	_, err := p.dbConn.Exec(createCardanoDataExec,
 		data.Uuid, data.EpochNumber, data.KesCurrent, data.KesRemaining,
 		data.KesExpDate, data.BlockLeader, data.BlockAdopted,
 		data.BlockInvalid, data.LiveStake, data.ActiveStake,
 		data.Pledge, data.TipDiff, data.Density,
-		data.ProcessedTx, data.PeersIn, data.PeersOut, time.Now()); err != nil {
+		data.ProcessedTx, data.PeersIn, data.PeersOut, time.Now())
+	if err != nil {
 		log.Println("CreateServerBasicData", err)
 		return err
 	}
