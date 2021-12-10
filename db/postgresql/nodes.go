@@ -100,17 +100,20 @@ const getNodeServerDataQuery = `
 	       free, available, active, inactive, swap_total, swap_used, swap_cached,
 	       swap_free, mem_available_enabled, cpu_qty, average_workload, last_update
 	FROM node_server_data
+	WHERE uuid = $1
+    ORDER BY "last_update" DESC
+    LIMIT 100
 `
 
-func (p postgresql) GetNodeServerData() ([]structs.ServerData, error) {
-	rows, err := p.dbConn.Query(getNodeServerDataQuery)
+func (p postgresql) GetNodeServerData(uuid string) ([]structs.ServerData, error) {
+	rows, err := p.dbConn.Query(getNodeServerDataQuery, uuid)
 	if err != nil {
 		log.Fatal("GetNodesServerData", err)
 		return []structs.ServerData{}, err
 	}
 	defer rows.Close()
 
-	serverData := make([]structs.ServerData, 0, 10)
+	serverData := make([]structs.ServerData, 0, 50)
 	for rows.Next() {
 		data := structs.ServerData{}
 		err := rows.Scan(&data.Uuid, &data.Ipv4, data.Ipv6, &data.LinuxName, &data.LinuxVersion,
@@ -175,17 +178,20 @@ const getCardanoData = `
 	       live_stake, active_stake, pledge, tip_diff, density, processed_tx,
 	       peers_in, peers_out, last_update
 	FROM cardano_data
+	WHERE uuid = $1
+    ORDER BY "last_update" DESC
+    LIMIT 100
 `
 
-func (p postgresql) GetCardanoData() ([]structs.CardanoData, error) {
-	rows, err := p.dbConn.Query(getCardanoData)
+func (p postgresql) GetCardanoData(uuid string) ([]structs.CardanoData, error) {
+	rows, err := p.dbConn.Query(getCardanoData, uuid)
 	if err != nil {
 		log.Fatal("GetServerBasicData", err)
 		return []structs.CardanoData{}, err
 	}
 	defer rows.Close()
 
-	cardanoData := make([]structs.CardanoData, 0, 10)
+	cardanoData := make([]structs.CardanoData, 0, 50)
 	for rows.Next() {
 		data := structs.CardanoData{}
 		err := rows.Scan(&data.Uuid, &data.EpochNumber, &data.KesCurrent, &data.KesRemaining,

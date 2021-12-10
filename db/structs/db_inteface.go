@@ -49,11 +49,11 @@ type NodeInterface interface {
 }
 
 type ServerDataInterface interface {
-	GetNodeServerData() ([]ServerData, error)
+	GetNodeServerData(uuid string) ([]ServerData, error)
 	CreateNodeServerData(data ServerData) error
 }
 
 type CardanoDataInterface interface {
-	GetCardanoData() ([]CardanoData, error)
+	GetCardanoData(uuid string) ([]CardanoData, error)
 	CreateCardanoData(data CardanoData) error
 }
