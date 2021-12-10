@@ -7,8 +7,6 @@ import (
 	"log"
 )
 
-var repoNodesInstance RepoNodes
-
 type RepoNodes struct {
 	db structs.Database
 }
