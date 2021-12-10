@@ -74,7 +74,7 @@ const createCardanoDataTableExec = `
     PRIMARY KEY(uuid, last_update))
 `
 
-func (p Postgresql) CreateAllTables() error {
+func (p postgresql) CreateAllTables() error {
 	if _, err := p.dbConn.Exec(createNodesTableExec); err != nil {
 		log.Println("createNodesTableExec", err)
 		return err

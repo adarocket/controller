@@ -12,7 +12,7 @@ const getNodesDataQuery = `
 	FROM nodes
 `
 
-func (p Postgresql) GetNodesData() ([]structs.Node, error) {
+func (p postgresql) GetNodesData() ([]structs.Node, error) {
 	rows, err := p.dbConn.Query(getNodesDataQuery)
 	if err != nil {
 		log.Fatal("GetNodesAuthData", err)
@@ -43,7 +43,7 @@ const getNodeDataQuery = `
 	WHERE uuid = $1
 `
 
-func (p Postgresql) GetNodeData(uuid string) (structs.Node, error) {
+func (p postgresql) GetNodeData(uuid string) (structs.Node, error) {
 	rows, err := p.dbConn.Query(getNodeDataQuery, uuid)
 	if err != nil {
 		log.Fatal("GetNodesAuthData", err)
@@ -79,7 +79,7 @@ const createNodeExec = `
   	    last_update 	= excluded.last_update;
 `
 
-func (p Postgresql) CreateNodeData(data structs.Node) error {
+func (p postgresql) CreateNodeData(data structs.Node) error {
 	_, err := p.dbConn.Exec(createNodeExec,
 		data.NodeAuthData.Ticker, data.Uuid, data.Status,
 		data.Type, data.Location, data.NodeVersion, data.Blockchain, time.Now())
@@ -102,7 +102,7 @@ const getNodeServerDataQuery = `
 	FROM node_server_data
 `
 
-func (p Postgresql) GetNodeServerData() ([]structs.ServerData, error) {
+func (p postgresql) GetNodeServerData() ([]structs.ServerData, error) {
 	rows, err := p.dbConn.Query(getNodeServerDataQuery)
 	if err != nil {
 		log.Fatal("GetNodesServerData", err)
@@ -150,7 +150,7 @@ const createNodeServerDataExec = `
 	        $31, $32, $33)
 `
 
-func (p Postgresql) CreateNodeServerData(data structs.ServerData) error {
+func (p postgresql) CreateNodeServerData(data structs.ServerData) error {
 	_, err := p.dbConn.Exec(createNodeServerDataExec,
 		data.Uuid, data.Ipv4, data.Ipv6, data.LinuxName, data.LinuxVersion,
 		data.InformerActual, data.InformerAvailable, data.UpdaterActual,
@@ -177,7 +177,7 @@ const getCardanoData = `
 	FROM cardano_data
 `
 
-func (p Postgresql) GetCardanoData() ([]structs.CardanoData, error) {
+func (p postgresql) GetCardanoData() ([]structs.CardanoData, error) {
 	rows, err := p.dbConn.Query(getCardanoData)
 	if err != nil {
 		log.Fatal("GetServerBasicData", err)
@@ -215,7 +215,7 @@ const createCardanoDataExec = `
 	        $13, $14, $15, $16, $17)
 `
 
-func (p Postgresql) CreateCardanoData(data structs.CardanoData) error {
+func (p postgresql) CreateCardanoData(data structs.CardanoData) error {
 	_, err := p.dbConn.Exec(createCardanoDataExec,
 		data.Uuid, data.EpochNumber, data.KesCurrent, data.KesRemaining,
 		data.KesExpDate, data.BlockLeader, data.BlockAdopted,

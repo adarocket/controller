@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-var dbInstance Postgresql
+var dbInstance postgresql
 
 func InitDatabase(config config.Config) (structs.Database, error) {
 	var err error
@@ -30,7 +30,7 @@ func InitDatabase(config config.Config) (structs.Database, error) {
 	return dbInstance, err
 }
 
-func createDbInstance(config config.Config) (Postgresql, error) {
+func createDbInstance(config config.Config) (postgresql, error) {
 	log.Println("Starting initialization db...")
 	connStr := fmt.Sprintf(`user=%s password=%s dbname=%s sslmode=%s`,
 		config.DBConfig.User, config.DBConfig.Password,
@@ -38,20 +38,20 @@ func createDbInstance(config config.Config) (Postgresql, error) {
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		return Postgresql{}, err
+		return postgresql{}, err
 	}
 
 	if err = db.Ping(); err != nil {
-		return Postgresql{}, err
+		return postgresql{}, err
 	}
 
-	return Postgresql{dbConn: db}, nil
+	return postgresql{dbConn: db}, nil
 }
 
-type Postgresql struct {
+type postgresql struct {
 	dbConn *sql.DB
 }
 
-func (p Postgresql) Ping() error {
+func (p postgresql) Ping() error {
 	return p.dbConn.Ping()
 }
