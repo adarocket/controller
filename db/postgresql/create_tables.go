@@ -5,13 +5,13 @@ import "log"
 const createNodesTableExec = `
     CREATE TABLE IF NOT EXISTS nodes (
     ticker             varchar(256) not null default '',
-    uuid               varchar(40) PRIMARY KEY,
-    status             varchar(40) not null default '',
-    type               varchar(40) not null default '',
-    location           varchar(40) not null default '',
-    node_Version       varchar(40) not null default '',
-    blockchain         varchar(40) not null default '',
-    last_Update        timestamp   with time zone not null)
+    uuid               varchar(40)  PRIMARY KEY,
+    status             varchar(40)  not null default '',
+    type               varchar(40)  not null default '',
+    location           varchar(256) not null default '',
+    node_Version       varchar(40)  not null default '',
+    blockchain         varchar(40)  not null default '',
+    last_Update        timestamp    with time zone not null)
 `
 
 const createServerDataTableExec = `
