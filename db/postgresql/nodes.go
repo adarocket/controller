@@ -15,7 +15,7 @@ const getNodesDataQuery = `
 func (p postgresql) GetNodesData() ([]structs.Node, error) {
 	rows, err := p.dbConn.Query(getNodesDataQuery)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Println("GetNodesAuthData", err)
 		return []structs.Node{}, err
 	}
 	defer rows.Close()
@@ -46,7 +46,7 @@ const getNodeDataQuery = `
 func (p postgresql) GetNodeData(uuid string) (structs.Node, error) {
 	rows, err := p.dbConn.Query(getNodeDataQuery, uuid)
 	if err != nil {
-		log.Fatal("GetNodesAuthData", err)
+		log.Println("GetNodesAuthData", err)
 		return structs.Node{}, err
 	}
 	defer rows.Close()
@@ -108,7 +108,7 @@ const getNodeServerDataQuery = `
 func (p postgresql) GetNodeServerData(uuid string) ([]structs.ServerData, error) {
 	rows, err := p.dbConn.Query(getNodeServerDataQuery, uuid)
 	if err != nil {
-		log.Fatal("GetNodesServerData", err)
+		log.Println("GetNodesServerData", err)
 		return []structs.ServerData{}, err
 	}
 	defer rows.Close()
@@ -186,7 +186,7 @@ const getCardanoData = `
 func (p postgresql) GetCardanoData(uuid string) ([]structs.CardanoData, error) {
 	rows, err := p.dbConn.Query(getCardanoData, uuid)
 	if err != nil {
-		log.Fatal("GetServerBasicData", err)
+		log.Println("GetServerBasicData", err)
 		return []structs.CardanoData{}, err
 	}
 	defer rows.Close()
