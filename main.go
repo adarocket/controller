@@ -1,14 +1,14 @@
 package main
 
 import (
-	"log"
-	"net"
-	"time"
-
+	"flag"
 	"github.com/adarocket/controller/auth"
 	"github.com/adarocket/controller/config"
 	"github.com/adarocket/controller/informer"
 	"github.com/adarocket/controller/user"
+	"log"
+	"net"
+	"time"
 
 	authPB "github.com/adarocket/proto/proto-gen/auth"
 	cardanoPB "github.com/adarocket/proto/proto-gen/cardano"
@@ -25,11 +25,42 @@ const (
 )
 
 // var loadedConfig config.Config
+var add = flag.Bool("add", false, "add new node’s uuid to conf")
+var remove = flag.Bool("remove", false, "remove exist node’s uuid from conf")
+var status = flag.Bool("status", false, "show data for all nodes that are in the config")
 
 func main() {
+	flag.Parse()
 	loadedConfig, err := config.LoadConfig()
 	if err != nil {
 		panic(err)
+	}
+
+	/*db, err := postgresql.InitDatabase(loadedConfig)
+	if err != nil {
+		log.Println(err)
+		return
+	}*/
+
+	if *add {
+		if err = loadedConfig.CreateNodes(); err != nil {
+			log.Println(err)
+		}
+	}
+	if *remove {
+		if err = loadedConfig.RemoveNodes(); err != nil {
+			log.Println(err)
+		}
+	}
+	if *status {
+		/*nodes, err := db.GetNodesData()
+		if err != nil {
+			log.Println(err)
+		} else {
+			for _, node := range nodes {
+				fmt.Println(node)
+			}
+		}*/
 	}
 
 	userStore := user.NewInMemoryUserStore()
@@ -53,6 +84,12 @@ func main() {
 
 	interceptor := auth.NewAuthInterceptor(jwtManager, accessiblePermissions())
 
+	/*err = db.CreateAllTables()
+	if err != nil {
+		log.Println(err)
+	}
+	go save.AutoSave(cardanoServer, db, 5)*/
+
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),
 	)
@@ -72,6 +109,7 @@ func main() {
 func createUser(userStore user.UserStore, username, password string, permissions []string) error {
 	user, err := user.NewUser(username, password, permissions)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return userStore.Save(user)
@@ -79,6 +117,7 @@ func createUser(userStore user.UserStore, username, password string, permissions
 
 func seedUsers(userStore user.UserStore) error {
 	if err := createUser(userStore, "admin1", "secret", []string{"basic", "server_technical", "node_technical", "node_financial"}); err != nil {
+		log.Println(err)
 		return err
 	}
 
