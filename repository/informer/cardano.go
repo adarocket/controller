@@ -2,10 +2,9 @@ package informer
 
 import (
 	"context"
-
-	"github.com/adarocket/controller/auth"
-	"github.com/adarocket/controller/config"
-	"github.com/adarocket/controller/helpers"
+	"github.com/adarocket/controller/repository/auth"
+	"github.com/adarocket/controller/repository/config"
+	"github.com/adarocket/controller/repository/helpers"
 
 	pb "github.com/adarocket/proto/proto-gen/cardano"
 	commonPB "github.com/adarocket/proto/proto-gen/common"
@@ -54,58 +53,111 @@ func (server *CardanoInformServer) SaveStatistic(ctx context.Context, request *p
 		nodeStatistic.NodeAuthData = new(commonPB.NodeAuthData)
 	}
 
+	// Ticker - string
+	// Uuid - string
+	// Status - string
 	if request.NodeAuthData != nil {
 		nodeStatistic.NodeAuthData = request.NodeAuthData
 	}
 
+	// Ticker - string
+	// Type - string
+	// Location - string
+	// NodeVersion - string
 	if request.Statistic.NodeBasicData != nil {
 		nodeStatistic.Statistic.NodeBasicData = request.Statistic.NodeBasicData
 	}
 
+	// Ipv4 - string
+	// Ipv6 - string
+	// LinuxName - string
+	// LinuxVersion - string
 	if request.Statistic.ServerBasicData != nil {
 		nodeStatistic.Statistic.ServerBasicData = request.Statistic.ServerBasicData
 	}
 
+	// EpochNumber - int64
 	if request.Statistic.Epoch != nil {
 		nodeStatistic.Statistic.Epoch = request.Statistic.Epoch
 	}
 
+	// KesCurrent - int64
+	// KesRemaining - int64
+	// KesExpDate - string
 	if request.Statistic.KesData != nil {
 		nodeStatistic.Statistic.KesData = request.Statistic.KesData
 	}
 
+	// BlockLeader - int64
+	// BlockAdopted - int64
+	// BlockInvalid - int64
 	if request.Statistic.Blocks != nil {
 		nodeStatistic.Statistic.Blocks = request.Statistic.Blocks
 	}
 
+	// InformerActual - string
+	// InformerAvailable - string
+	// UpdaterActual - string
+	// UpdaterAvailable - string
+	// PackagesAvailable - int64
 	if request.Statistic.Updates != nil {
 		nodeStatistic.Statistic.Updates = request.Statistic.Updates
 	}
 
+	// SshAttackAttempts - int64
+	// SecurityPackagesAvailable - int64
 	if request.Statistic.Security != nil {
 		nodeStatistic.Statistic.Security = request.Statistic.Security
 	}
 
+	// LiveStake - int64
+	// ActiveStake - int64
+	// Pledge - int64
 	if request.Statistic.StakeInfo != nil {
 		nodeStatistic.Statistic.StakeInfo = request.Statistic.StakeInfo
 	}
 
+	// SinceStart - int64
+	// Pings - int64
+	// NodeActive - bool
+	// NodeActivePings - int64
+	// ServerActive - bool
 	if request.Statistic.Online != nil {
 		nodeStatistic.Statistic.Online = request.Statistic.Online
 	}
 
+	// Total - uint64
+	// Used - uint64
+	// Buffers - uint64
+	// Cached - uint64
+	// Free - uint64
+	// Available - uint64
+	// Active - uint64
+	// Inactive - uint64
+	// SwapTotal - uint64
+	// SwapUsed - uint64
+	// SwapCached - uint64
+	// SwapFree - uint64
+	// MemAvailableEnabled - bool
 	if request.Statistic.MemoryState != nil {
 		nodeStatistic.Statistic.MemoryState = request.Statistic.MemoryState
 	}
 
+	// CpuQty - int64
+	// AverageWorkload - float32
 	if request.Statistic.CpuState != nil {
 		nodeStatistic.Statistic.CpuState = request.Statistic.CpuState
 	}
 
+	// TipDiff - int64
+	// Density - float32
 	if request.Statistic.NodeState != nil {
 		nodeStatistic.Statistic.NodeState = request.Statistic.NodeState
 	}
 
+	// ProcessedTx - int64
+	// PeersIn - int64
+	// PeersOut - int64
 	if request.Statistic.NodePerformance != nil {
 		nodeStatistic.Statistic.NodePerformance = request.Statistic.NodePerformance
 	}

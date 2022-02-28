@@ -1,14 +1,15 @@
 package main
 
 import (
+	"github.com/adarocket/controller/db/postgresql"
+	auth "github.com/adarocket/controller/repository/auth"
+	"github.com/adarocket/controller/repository/config"
+	informer "github.com/adarocket/controller/repository/informer"
+	"github.com/adarocket/controller/repository/save"
+	user "github.com/adarocket/controller/repository/user"
 	"log"
 	"net"
 	"time"
-
-	"github.com/adarocket/controller/auth"
-	"github.com/adarocket/controller/config"
-	"github.com/adarocket/controller/informer"
-	"github.com/adarocket/controller/user"
 
 	authPB "github.com/adarocket/proto/proto-gen/auth"
 	cardanoPB "github.com/adarocket/proto/proto-gen/cardano"
@@ -53,6 +54,17 @@ func main() {
 
 	interceptor := auth.NewAuthInterceptor(jwtManager, accessiblePermissions())
 
+	db, err := postgresql.InitDatabase(loadedConfig)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	err = db.CreateAllTables()
+	if err != nil {
+		log.Println(err)
+	}
+	go save.AutoSave(cardanoServer, db, 5)
+
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),
 	)
@@ -72,6 +84,7 @@ func main() {
 func createUser(userStore user.UserStore, username, password string, permissions []string) error {
 	user, err := user.NewUser(username, password, permissions)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return userStore.Save(user)
@@ -79,6 +92,7 @@ func createUser(userStore user.UserStore, username, password string, permissions
 
 func seedUsers(userStore user.UserStore) error {
 	if err := createUser(userStore, "admin1", "secret", []string{"basic", "server_technical", "node_technical", "node_financial"}); err != nil {
+		log.Println(err)
 		return err
 	}
 
