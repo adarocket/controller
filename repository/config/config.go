@@ -7,9 +7,10 @@ import (
 
 // Config - structure of config file
 type Config struct {
-	ServerPort string   `json:"server_port"`
-	Nodes      []Node   `json:"nodes"`
-	DBConfig   DBConfig `json:"db"`
+	ServerPort  string   `json:"server_port"`
+	Nodes       []Node   `json:"nodes"`
+	DBConfig    DBConfig `json:"db"`
+	usrHomePath string
 }
 
 // Node -
@@ -43,6 +44,7 @@ func LoadConfig() (loadedConfig Config, err error) {
 		return loadedConfig, err
 	}
 
+	loadedConfig.usrHomePath = usrHomePath
 	err = goconfig.LoadConfig(cConfigPath, &loadedConfig)
 	if err == nil {
 		return loadedConfig, nil
@@ -51,6 +53,10 @@ func LoadConfig() (loadedConfig Config, err error) {
 	log.Println("Config", usrHomePath+cConfigPath, "not found")
 	log.Println("Trying", usrHomePath+cConfigPathReserve, "reserve config path...")
 	err = goconfig.LoadConfig(usrHomePath+cConfigPathReserve, &loadedConfig)
+	if err != nil {
+		log.Println(err)
+		err = loadedConfig.CreateConfByUser()
+	}
 
 	return loadedConfig, err
 }
