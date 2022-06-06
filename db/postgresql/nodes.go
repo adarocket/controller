@@ -1,13 +1,14 @@
 package postgresql
 
 import (
-	"github.com/adarocket/controller/db/structs"
 	"log"
 	"time"
+
+	"github.com/adarocket/controller/db/structs"
 )
 
 const getNodesDataQuery = `
-	SELECT ticker, uuid, status, type, 
+	SELECT ticker, uuid, status, name, type, 
 	       location, node_version, blockchain, last_update 
 	FROM nodes
 `
@@ -23,12 +24,22 @@ func (p postgresql) GetNodesData() ([]structs.Node, error) {
 	nodesData := make([]structs.Node, 0, 10)
 	for rows.Next() {
 		data := structs.Node{}
-		err := rows.Scan(&data.NodeAuthData.Ticker, &data.Uuid, &data.Status,
-			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain, &data.LastUpdate)
+		err := rows.Scan(
+			&data.NodeAuthData.Ticker,
+			&data.NodeAuthData.Uuid,
+			&data.NodeAuthData.Status,
+			&data.NodeAuthData.Name,
+			&data.NodeBasicData.Type,
+			&data.NodeBasicData.Location,
+			&data.NodeBasicData.NodeVersion,
+			&data.NodeAuthData.Blockchain,
+			&data.LastUpdate)
 		if err != nil {
 			log.Println("NodesAuth: parse err", err)
 			continue
 		}
+
+		data.NodeAuthData.Type = data.NodeBasicData.Type
 
 		nodesData = append(nodesData, data)
 	}
@@ -37,7 +48,7 @@ func (p postgresql) GetNodesData() ([]structs.Node, error) {
 }
 
 const getNodeDataQuery = `
-	SELECT ticker, uuid, status, type, 
+	SELECT ticker, uuid, status, name, type, 
 	       location, node_version, blockchain, last_update 
 	FROM nodes
 	WHERE uuid = $1
@@ -53,25 +64,41 @@ func (p postgresql) GetNodeData(uuid string) (structs.Node, error) {
 
 	data := structs.Node{}
 	for rows.Next() {
-		err := rows.Scan(&data.NodeAuthData.Ticker, &data.Uuid, &data.Status,
-			&data.Type, &data.Location, &data.NodeVersion, &data.Blockchain, &data.LastUpdate)
+		err := rows.Scan(&data.NodeAuthData.Ticker,
+			&data.NodeAuthData.Uuid,
+			&data.NodeAuthData.Status,
+			&data.NodeAuthData.Name,
+			&data.NodeBasicData.Type,
+			&data.NodeBasicData.Location,
+			&data.NodeBasicData.NodeVersion,
+			&data.NodeAuthData.Blockchain,
+			&data.LastUpdate)
 		if err != nil {
 			log.Println("NodesAuth: parse err", err)
 			continue
 		}
+		data.NodeAuthData.Type = data.NodeBasicData.Type
 	}
 
 	return data, nil
 }
 
 const createNodeExec = `
-	INSERT INTO Nodes
-	(ticker, uuid, status, type, location,
-	 node_version, blockchain, last_update) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	INSERT INTO nodes (
+		ticker, 
+		uuid, 
+		status, 
+		name,
+		type, 
+		location,
+		node_version, 
+		blockchain, 
+		last_update) 
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 	ON CONFLICT (uuid) DO UPDATE 
   	SET ticker 			= excluded.ticker,
   	    status 			= excluded.status,
+  	    name 			= excluded.name,
   	    type 			= excluded.type,
   	    location 		= excluded.location,
   	    node_version 	= excluded.node_version,
@@ -81,8 +108,15 @@ const createNodeExec = `
 
 func (p postgresql) CreateNodeData(data structs.Node) error {
 	_, err := p.dbConn.Exec(createNodeExec,
-		data.NodeAuthData.Ticker, data.Uuid, data.Status,
-		data.Type, data.Location, data.NodeVersion, data.Blockchain, time.Now())
+		data.NodeAuthData.Ticker,
+		data.NodeAuthData.Uuid,
+		data.NodeAuthData.Status,
+		data.NodeAuthData.Name,
+		data.NodeBasicData.Type,
+		data.NodeBasicData.Location,
+		data.NodeBasicData.NodeVersion,
+		data.NodeAuthData.Blockchain,
+		time.Now())
 	if err != nil {
 		log.Println("CreateNode", err)
 		return err

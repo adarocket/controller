@@ -2,10 +2,11 @@ package informer
 
 import (
 	"context"
+	"log"
+
 	"github.com/adarocket/controller/repository/auth"
 	"github.com/adarocket/controller/repository/config"
 	"github.com/adarocket/controller/repository/repnodes"
-	"log"
 
 	pb "github.com/adarocket/proto/proto-gen/common"
 )
@@ -43,7 +44,10 @@ func (server *CommonInformServer) GetNodeList(ctx context.Context, request *pb.G
 		nodeAuthData := new(pb.NodeAuthData)
 		nodeAuthData.Uuid = n.UUID
 		nodeAuthData.Ticker = node.NodeAuthData.Ticker
-		nodeAuthData.Blockchain = n.Blockchain
+		nodeAuthData.Blockchain = node.NodeAuthData.Blockchain
+
+		nodeAuthData.Type = node.NodeAuthData.Type
+		nodeAuthData.Name = node.NodeAuthData.Name
 
 		response.NodeAuthData = append(response.NodeAuthData, nodeAuthData)
 	}
