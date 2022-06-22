@@ -1,15 +1,16 @@
 package main
 
 import (
+	"log"
+	"net"
+	"time"
+
 	"github.com/adarocket/controller/db/postgresql"
 	auth "github.com/adarocket/controller/repository/auth"
 	"github.com/adarocket/controller/repository/config"
 	informer "github.com/adarocket/controller/repository/informer"
 	"github.com/adarocket/controller/repository/save"
 	user "github.com/adarocket/controller/repository/user"
-	"log"
-	"net"
-	"time"
 
 	authPB "github.com/adarocket/proto/proto-gen/auth"
 	cardanoPB "github.com/adarocket/proto/proto-gen/cardano"
@@ -45,15 +46,6 @@ func main() {
 
 	// ----------------------------------------------------------------------
 
-	jwtManager := auth.NewJWTManager(secretKey, tokenDuration)
-	authServer := auth.NewAuthServer(userStore, jwtManager)
-
-	commonServer := informer.NewCommonInformServer(jwtManager, loadedConfig)
-	cardanoServer := informer.NewCardanoInformServer(jwtManager, loadedConfig)
-	chiaServer := informer.NewChiaInformServer(jwtManager, loadedConfig)
-
-	interceptor := auth.NewAuthInterceptor(jwtManager, accessiblePermissions())
-
 	db, err := postgresql.InitDatabase(loadedConfig)
 	if err != nil {
 		log.Println(err)
@@ -63,6 +55,18 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
+
+	// ----------------------------------------------------------------------
+
+	jwtManager := auth.NewJWTManager(secretKey, tokenDuration)
+	authServer := auth.NewAuthServer(userStore, jwtManager)
+
+	commonServer := informer.NewCommonInformServer(jwtManager, loadedConfig)
+	cardanoServer := informer.NewCardanoInformServer(jwtManager, loadedConfig, db)
+	chiaServer := informer.NewChiaInformServer(jwtManager, loadedConfig)
+
+	interceptor := auth.NewAuthInterceptor(jwtManager, accessiblePermissions())
+
 	go save.AutoSave(cardanoServer, db, 5)
 
 	grpcServer := grpc.NewServer(

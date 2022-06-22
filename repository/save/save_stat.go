@@ -1,18 +1,22 @@
 package save
 
 import (
+	"log"
+	"time"
+
 	"github.com/adarocket/controller/db/structs"
 	"github.com/adarocket/controller/repository/informer"
 	"github.com/adarocket/proto/proto-gen/cardano"
-	"log"
-	"time"
 )
 
 func AutoSave(server *informer.CardanoInformServer, db structs.Database, minutes int) {
 	go func() {
-		for _ = range time.Tick(time.Minute * time.Duration(minutes)) {
+
+		for {
+			time.Sleep(time.Duration(minutes) * time.Minute)
 			saveToDb(server, db)
 		}
+
 	}()
 }
 
