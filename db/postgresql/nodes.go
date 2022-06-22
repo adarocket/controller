@@ -150,7 +150,7 @@ func (p postgresql) GetNodeServerData(uuid string) ([]structs.ServerData, error)
 	serverData := make([]structs.ServerData, 0, 50)
 	for rows.Next() {
 		data := structs.ServerData{}
-		err := rows.Scan(&data.Uuid, &data.Ipv4, data.Ipv6, &data.LinuxName, &data.LinuxVersion,
+		err := rows.Scan(&data.Uuid, &data.Ipv4, &data.Ipv6, &data.LinuxName, &data.LinuxVersion,
 			&data.InformerActual, &data.InformerAvailable, &data.UpdaterActual,
 			&data.UpdaterAvailable, &data.PackagesAvailable, &data.SshAttackAttempts,
 			&data.SecurityPackagesAvailable, &data.SinceStart, &data.Pings,
