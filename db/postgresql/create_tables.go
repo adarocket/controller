@@ -7,6 +7,7 @@ const createNodesTableExec = `
     ticker             varchar(256) not null default '',
     uuid               varchar(40)  PRIMARY KEY,
     status             varchar(40)  not null default '',
+    name               varchar(256) not null default '',
     type               varchar(40)  not null default '',
     location           varchar(256) not null default '',
     node_Version       varchar(40)  not null default '',

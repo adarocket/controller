@@ -3,7 +3,7 @@ module github.com/adarocket/controller
 go 1.16
 
 require (
-	github.com/adarocket/proto v0.3.4
+	github.com/adarocket/proto v0.5.0
 	github.com/bykovme/goconfig v0.0.0-20170717154220-caa70d3abfca
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/lib/pq v1.10.4

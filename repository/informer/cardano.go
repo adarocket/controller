@@ -2,6 +2,8 @@ package informer
 
 import (
 	"context"
+
+	"github.com/adarocket/controller/db/structs"
 	"github.com/adarocket/controller/repository/auth"
 	"github.com/adarocket/controller/repository/config"
 	"github.com/adarocket/controller/repository/helpers"
@@ -22,14 +24,17 @@ type CardanoInformServer struct {
 	jwtManager *auth.JWTManager
 
 	pb.UnimplementedCardanoServer
+
+	db structs.Database
 }
 
 // NewCardanoInformServer -
-func NewCardanoInformServer(jwtManager *auth.JWTManager, loadedConfig config.Config) *CardanoInformServer {
+func NewCardanoInformServer(jwtManager *auth.JWTManager, loadedConfig config.Config, db structs.Database) *CardanoInformServer {
 	return &CardanoInformServer{
 		NodeStatistics: make(map[string]*pb.SaveStatisticRequest),
 		jwtManager:     jwtManager,
 		loadedConfig:   loadedConfig,
+		db:             db,
 	}
 }
 
@@ -196,7 +201,45 @@ func (server *CardanoInformServer) GetStatistic(ctx context.Context, request *pb
 
 	node := server.NodeStatistics[request.Uuid]
 	if node == nil {
-		return response, nil
+		// Get data from DB
+		node = new(pb.SaveStatisticRequest)
+		node.NodeAuthData = new(commonPB.NodeAuthData)
+
+		nodeDtata, err := server.db.GetNodeData(request.Uuid)
+		if err != nil {
+			return response, status.Errorf(codes.Internal, "failed to get data from DB: %v", err)
+		}
+		node.NodeAuthData = &nodeDtata.NodeAuthData
+
+		allServerData, err := server.db.GetNodeServerData(request.Uuid)
+		if err != nil {
+			return response, status.Errorf(codes.Internal, "failed to get data from DB: %v", err)
+		}
+		lastServerData := allServerData[len(allServerData)-1]
+
+		node.Statistic = new(pb.Statistic)
+
+		node.Statistic.ServerBasicData = &lastServerData.ServerBasicData
+		node.Statistic.Online = &lastServerData.Online
+
+		node.Statistic.MemoryState = &lastServerData.MemoryState
+		node.Statistic.CpuState = &lastServerData.CPUState
+		node.Statistic.Updates = &lastServerData.Updates
+		node.Statistic.Security = &lastServerData.Security
+
+		allCardanoData, err := server.db.GetCardanoData(request.Uuid)
+		if err != nil {
+			return response, status.Errorf(codes.Internal, "failed to get data from DB: %v", err)
+		}
+		lastCardanoData := allCardanoData[len(allCardanoData)-1]
+
+		node.Statistic.Epoch = &lastCardanoData.Epoch
+		node.Statistic.NodeState = &lastCardanoData.NodeState
+		node.Statistic.NodePerformance = &lastCardanoData.NodePerformance
+		node.Statistic.KesData = &lastCardanoData.KESData
+
+		node.Statistic.Blocks = &lastCardanoData.Blocks
+		node.Statistic.StakeInfo = &lastCardanoData.StakeInfo
 	}
 
 	response.NodeAuthData = node.NodeAuthData

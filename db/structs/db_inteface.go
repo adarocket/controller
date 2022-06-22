@@ -1,9 +1,10 @@
 package structs
 
 import (
+	"time"
+
 	cardanoPb "github.com/adarocket/proto/proto-gen/cardano"
 	commonPB "github.com/adarocket/proto/proto-gen/common"
-	"time"
 )
 
 type Database interface {
@@ -15,9 +16,9 @@ type Database interface {
 }
 
 type Node struct {
-	commonPB.NodeAuthData
-	commonPB.NodeBasicData
-	LastUpdate time.Time
+	NodeAuthData  commonPB.NodeAuthData
+	NodeBasicData commonPB.NodeBasicData
+	LastUpdate    time.Time
 }
 
 type ServerData struct {
